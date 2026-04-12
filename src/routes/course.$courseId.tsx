@@ -1,7 +1,7 @@
 import { createFileRoute, Outlet, notFound } from '@tanstack/react-router'
 import type { RoadmapNode } from '~/modules/data'
 
-const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3001'
+const API_URL = import.meta.env.VITE_API_URL ?? 'https://create.learnstud.io'
 
 export interface CourseData {
   course: { title: string; subtitle: string; version: string }

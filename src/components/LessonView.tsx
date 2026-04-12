@@ -150,7 +150,12 @@ export function LessonView({ roadmapNode, lessonNodes, getVis, onBack }: LessonV
 
     function onScroll() {
       if (isScrollingToRef.current) return
-      const containerTop = container!.getBoundingClientRect().top
+      const c = container!
+      if (c.scrollHeight - c.scrollTop - c.clientHeight < 5) {
+        setActiveId(ids[ids.length - 1])
+        return
+      }
+      const containerTop = c.getBoundingClientRect().top
       const threshold = containerTop + 80
       let best = ids[0]
       for (const id of ids) {

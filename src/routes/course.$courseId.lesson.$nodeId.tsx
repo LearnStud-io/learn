@@ -3,7 +3,7 @@ import { LessonView } from '~/components/LessonView'
 import type { LessonNode } from '~/modules/data'
 import { Route as CourseRoute } from './course.$courseId'
 
-const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3001'
+const API_URL = import.meta.env.VITE_API_URL ?? 'https://create.learnstud.io'
 
 interface LessonData {
   lessonNodes: LessonNode[]

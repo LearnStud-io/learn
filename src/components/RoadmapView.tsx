@@ -4,6 +4,8 @@ import type { RoadmapNode, RoadmapEdge } from '../modules/data'
 import { deriveEdges } from '../modules/data'
 import { colors, font } from '../modules/theme'
 
+const STORAGE_KEY_PREFIX = 'roadmap-transform'
+
 const NODE_W = 220
 const RANK_SEP = 90
 const NODE_SEP = 64
@@ -144,9 +146,11 @@ export interface RoadmapViewProps {
   nodes: RoadmapNode[]
   onNodeClick: (nodeId: string) => void
   header?: React.ReactNode
+  storageKey?: string
 }
 
-export function RoadmapView({ nodes, onNodeClick, header }: RoadmapViewProps) {
+export function RoadmapView({ nodes, onNodeClick, header, storageKey }: RoadmapViewProps) {
+  const key = storageKey ?? STORAGE_KEY_PREFIX
   const edges = deriveEdges(nodes)
   const { layoutNodes, graphW, graphH } = computeLayout(nodes, edges)
 
@@ -165,9 +169,22 @@ export function RoadmapView({ nodes, onNodeClick, header }: RoadmapViewProps) {
 
   useEffect(() => {
     if (!svgRef.current) return
+    const saved = localStorage.getItem(key)
+    if (saved) {
+      try {
+        const { pan, zoom } = JSON.parse(saved)
+        applyTransform(pan, zoom)
+        return
+      } catch {}
+    }
     const { width, height } = svgRef.current.getBoundingClientRect()
     applyTransform({ x: (width - graphW) / 2, y: (height - graphH - START_LABEL_H) / 2 }, 1)
-  }, [graphW, graphH, applyTransform])
+  }, [graphW, graphH, applyTransform, key])
+
+  useEffect(() => {
+    if (pan === null) return
+    localStorage.setItem(key, JSON.stringify({ pan, zoom }))
+  }, [pan, zoom, key])
 
   const onMouseDown = useCallback((e: React.MouseEvent) => {
     const { pan: p } = transformRef.current
