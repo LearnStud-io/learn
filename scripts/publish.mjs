@@ -15,7 +15,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 const ROOT = resolve(__dirname, '..')
 const DATA = join(ROOT, 'src', 'modules', 'data')
 const ENV_PATH = join(ROOT, '.env')
-const PLATFORM_URL = process.env.LEARNSTUDIO_PLATFORM_URL ?? 'http://localhost:3001'
+const PLATFORM_URL = process.env.LEARNSTUDIO_PLATFORM_URL ?? 'https://create.learnstud.io'
 
 // ── .env helpers ──────────────────────────────────────────────────────────────
 
