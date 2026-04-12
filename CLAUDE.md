@@ -226,22 +226,24 @@ The user pastes a sentence or paragraph from a lesson and says "visualise this" 
 
 **What to do:**
 
-1. **Find the sentence** in `lesson.json` — identify which `text` block it lives in and exactly where within it.
+1. **Read `src/vis-primitives/INDEX.md`** — before writing any code, check what exists and which technology fits. Do not skip this step.
 
-2. **Split the text block** at that sentence — break the single `content` string into two parts: everything up to and including the sentence stays in the first block, everything after goes in a new `text` block.
+2. **Find the sentence** in `lesson.json` — identify which `text` block it lives in and exactly where within it.
 
-3. **Insert a `vis` block between them** with a `prompt` field storing the original sentence:
+3. **Split the text block** at that sentence — break the single `content` string into two parts: everything up to and including the sentence stays in the first block, everything after goes in a new `text` block.
+
+4. **Insert a `vis` block between them** with a `prompt` field storing the original sentence:
    ```json
    { "type": "text", "content": "...everything up to the sentence." },
    { "type": "vis", "file": "vis/<name>.html", "caption": "...", "prompt": "The exact sentence the user pasted" },
    { "type": "text", "content": "Everything after the sentence..." }
    ```
 
-4. **Choose the technology** — ask: does 3D genuinely help the learner grasp this concept? If yes, use Three.js. If not, use p5.js for animation or vanilla JS for simple layouts.
+5. **Choose the technology** — ask: does 3D genuinely help the learner grasp this concept? If yes, use Three.js. If not, use p5.js for animation or vanilla JS for simple layouts.
 
-5. **Create the HTML file** at `src/modules/data/lessons/<node-id>/vis/<name>.html`. Follow all vis rules. Include an in-vis interaction hint label.
+6. **Create the HTML file** at `src/modules/data/lessons/<node-id>/vis/<name>.html`. Read the relevant primitive files and inline them. Follow all vis rules. Include an in-vis interaction hint label.
 
-6. **Screenshot and verify** — run the screenshot tool and read the image before considering it done:
+7. **Screenshot and verify** — run the screenshot tool and read the image before considering it done:
    ```bash
    node scripts/screenshot-vis.mjs <node-id> <vis-filename>
    ```
@@ -282,9 +284,12 @@ vis-primitives/
 
 **Before writing a new vis:** read `src/vis-primitives/INDEX.md` — it tells you what exists and when to use each primitive. Then read the specific files that apply and inline their contents into the vis. Do not rewrite what already exists.
 
-**After finishing a vis:** look back at what you wrote and ask: is any of this worth saving or improving for next time?
-- If `PRIMITIVES=true` — add new helpers or update existing ones in `src/vis-primitives/`, update `INDEX.md`, then push `learn`. Creators who pull will get the latest.
-- If `PRIMITIVES=false` — do not update primitives. Read only.
+**After confirming the vis looks right:**
+- Re-read each primitive file you inlined. Compare your implementation to the canonical version — did you write a better version of anything? If yes, update that file with the improvement.
+- Did you write anything reusable that isn't in primitives yet? If yes, add it to the right file.
+- **If you touched any primitive file** — update `INDEX.md` unconditionally. Do not skip this.
+- If `PRIMITIVES=true` — push `learn` so creators get the update.
+- If `PRIMITIVES=false` — do not modify primitives. Read only.
 
 ---
 
