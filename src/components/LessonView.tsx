@@ -47,17 +47,17 @@ function Section({ node, depth, id, getVis, nodeId }: {
   return (
     <div id={id} className={cn(depth === 0 ? 'pt-2' : 'pt-10')}>
       {depth === 0 && (
-        <h2 className="text-2xl font-bold tracking-tight mb-6 border-b border-border pb-3 bg-gradient-to-r from-sky-300 to-blue-400 bg-clip-text text-transparent">
+        <h2 className="text-2xl font-bold tracking-tight mb-6 border-b border-border pb-3 text-primary">
           {node.title}
         </h2>
       )}
       {depth === 1 && (
-        <h3 className="text-xs font-semibold uppercase tracking-widest text-blue-400 mb-3">
+        <h3 className="text-xs font-semibold uppercase tracking-widest text-primary mb-3">
           {node.title}
         </h3>
       )}
       {depth >= 2 && (
-        <h4 className="text-sm font-semibold text-slate-400 mb-2">
+        <h4 className="text-sm font-semibold text-primary mb-2">
           {node.title}
         </h4>
       )}
@@ -109,9 +109,8 @@ function SidebarItem({ node, depth, id, activeId, onSelect }: {
         )}
         <span className={cn(
           'text-xs leading-snug',
-          !isActive && depth === 0 && 'font-medium text-foreground/80',
-          !isActive && depth === 1 && 'font-normal text-muted-foreground',
-          !isActive && depth >= 2 && 'font-normal text-muted-foreground/55',
+          depth === 0 && 'font-medium',
+          depth !== 0 && 'font-normal opacity-90',
           isActive && 'text-primary',
         )}>
           {node.title}
