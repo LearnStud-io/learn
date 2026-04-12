@@ -12,10 +12,10 @@ export function RoadmapPage() {
       onNodeClick={(nodeId) => navigate({ to: '/lesson/$nodeId', params: { nodeId } })}
       header={
         <div className="flex items-center px-6 h-12 shrink-0 border-b border-border bg-card/50">
-          <div>
-            <h1 className="text-sm font-bold text-foreground">{metadata.title}</h1>
+          <div className="min-w-0 flex-1">
+            <h1 className="text-sm font-bold text-foreground truncate">{metadata.title}</h1>
             {metadata.subtitle && (
-              <p className="text-xs text-muted-foreground">{metadata.subtitle}</p>
+              <p className="text-xs text-muted-foreground truncate">{metadata.subtitle}</p>
             )}
           </div>
           <p className="ml-auto text-xs text-muted-foreground/60 hidden sm:block">
