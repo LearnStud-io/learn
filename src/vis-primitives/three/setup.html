@@ -1,0 +1,89 @@
+<!-- Standard Three.js vis shell — use when 3D rotation/depth aids understanding.
+     iframe viewport: width 100%, height 280px.
+     Buttons are absolute-positioned over the canvas (z-index:10).
+     OrbitControls: drag to rotate, scroll to zoom. -->
+
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8"/>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#080d14; font-family:system-ui,sans-serif; height:100vh; overflow:hidden; }
+
+.btns {
+  display:flex; justify-content:center; gap:8px;
+  padding:8px 0; position:absolute; top:0; left:0; right:0; z-index:10;
+}
+.btn {
+  padding:5px 16px; border-radius:6px; border:1.5px solid #334155;
+  background:transparent; color:#94a3b8; font-size:12px; cursor:pointer;
+  font-family:system-ui,sans-serif; transition:all 0.15s;
+}
+.btn.active { background:#1e293b; border-color:#3b82f6; color:#e2e8f0; }
+
+#hint {
+  position:absolute; bottom:4px; left:0; right:0;
+  text-align:center; font-size:9px; color:#2d3a50;
+  pointer-events:none;
+}
+</style>
+</head>
+<body>
+
+<div class="btns">
+  <button class="btn active" id="b1" onclick="setState(0)">state A</button>
+  <button class="btn"        id="b2" onclick="setState(1)">state B</button>
+</div>
+<div id="hint">drag to rotate  •  scroll to zoom</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.160/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.160/examples/js/controls/OrbitControls.js"></script>
+<!-- paste palette.js contents here if needed -->
+<script>
+
+// ── scene setup ───────────────────────────────────────────────────────────────
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
+renderer.setPixelRatio(window.devicePixelRatio)
+renderer.setSize(window.innerWidth, window.innerHeight)
+renderer.setClearColor(0x080d14, 1)
+document.body.appendChild(renderer.domElement)
+
+const scene  = new THREE.Scene()
+const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 100)
+camera.position.set(0, 0, 5)
+
+const controls = new THREE.OrbitControls(camera, renderer.domElement)
+controls.enableDamping = true
+controls.dampingFactor = 0.08
+controls.enablePan     = false
+controls.minDistance   = 2
+controls.maxDistance   = 10
+
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight
+  camera.updateProjectionMatrix()
+  renderer.setSize(window.innerWidth, window.innerHeight)
+})
+
+// ── state ─────────────────────────────────────────────────────────────────────
+function setState(i) {
+  document.getElementById('b1').className = 'btn' + (i === 0 ? ' active' : '')
+  document.getElementById('b2').className = 'btn' + (i === 1 ? ' active' : '')
+  // ... update scene
+}
+
+// ── scene objects ─────────────────────────────────────────────────────────────
+// ... add meshes, lines, labels here
+
+// ── animation loop ────────────────────────────────────────────────────────────
+function animate() {
+  requestAnimationFrame(animate)
+  controls.update()
+  // ... update animations
+  renderer.render(scene, camera)
+}
+animate()
+</script>
+</body>
+</html>

@@ -245,6 +245,29 @@ The `prompt` field is authoring metadata — the platform ignores it, but it rec
 
 ---
 
+## Primitives
+
+If `PRIMITIVES=true` is set in the course repo's `.env`, the sibling `learn` repo is available at `../learn/`.
+
+After finishing a vis, **look back at what you wrote** and ask: is any of this worth saving for next time? If yes, extract it to `src/vis-primitives/`:
+
+```
+vis-primitives/
+  p5/
+    setup.html      ← shell: buttons, canvas, resize, hint footer
+    palette.js      ← P{} colour constants, DIM_RGB
+    animate.js      ← easeInOut, ANIM_SPEED, lerp-animation pattern
+    drawing.js      ← drawVBar, drawProdBar, drawBadge, drawColGlow, drawHint
+  three/
+    setup.html      ← shell: renderer, camera, OrbitControls, resize, animate loop
+```
+
+**Before writing a new vis:** if `PRIMITIVES=true` is set in the course repo, read `src/vis-primitives/INDEX.md` first — it tells you what exists and when to use it. Then read the specific files that apply and inline their contents into the vis. Do not rewrite what already exists.
+
+**After finishing a vis:** look back at what you wrote and ask: is any of this worth saving or improving for next time? If yes: add new helpers or update existing ones in `src/vis-primitives/` (a better version of something already there should replace it), then update `src/vis-primitives/INDEX.md` to reflect any additions or changes. Not one-off layout code specific to a single concept — only helpers you'd reach for again.
+
+---
+
 ## Visualisation design principles
 
 - One insight per visualisation — resist adding more
