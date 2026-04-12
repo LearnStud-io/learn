@@ -200,8 +200,13 @@ npm run publish
 
 1. Edit `metadata.json` — set the course title and subtitle
 2. Edit `roadmap.json` — define all topics and their dependencies
-3. For each topic, create `lessons/<node-id>/lesson.json` with the content
-4. For any vis blocks, create the corresponding `lessons/<node-id>/vis/<name>.html`
+3. **Get explicit user approval on the roadmap before writing any lesson content.** Show the node list and ask: "Does this look right before we fill in the lessons?"
+4. For each topic, create the lesson in three passes — do not skip ahead:
+   - **Pass 1 — Structure:** Create `lesson.json` with all sections and slugs. Blocks are empty `[]`. Get approval.
+   - **Pass 2 — Content:** Fill in `text` blocks with actual content. No visualisations yet. Get approval.
+   - **Pass 3 — Visualisations:** Add `vis` blocks and create the corresponding `.html` files.
 5. Run `npm run publish`
 
-Start with the roadmap — get all topics and dependencies right first, then fill in the lesson content.
+**Do not create lesson files until the roadmap is finalised and approved.** The node `id` is a stable key — changing it after lessons exist breaks the course.
+
+**Do not add content or visualisations until the structure pass is approved.** Build in order: structure → content → visualisations.

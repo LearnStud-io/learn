@@ -40,24 +40,27 @@ function ContentBlock({ block, getVis, nodeId }: {
   return null
 }
 
-const HEADING_SIZES = ['text-xl', 'text-base', 'text-sm', 'text-xs']
-const HEADING_WEIGHTS = ['font-bold', 'font-semibold', 'font-semibold', 'font-medium']
-const HEADING_COLORS = ['text-slate-100', 'text-slate-200', 'text-slate-300', 'text-slate-300']
-
 function Section({ node, depth, id, getVis, nodeId }: {
   node: LessonNode; depth: number; id: string
   getVis: (nodeId: string, file: string) => string | null; nodeId: string
 }) {
   return (
-    <div id={id} className={cn(depth > 0 && 'pt-6')}>
-      <h2 className={cn(
-        HEADING_SIZES[Math.min(depth, HEADING_SIZES.length - 1)],
-        HEADING_WEIGHTS[Math.min(depth, HEADING_WEIGHTS.length - 1)],
-        HEADING_COLORS[Math.min(depth, HEADING_COLORS.length - 1)],
-        depth === 0 ? 'mb-5' : 'mb-3'
-      )}>
-        {node.title}
-      </h2>
+    <div id={id} className={cn(depth === 0 ? 'pt-2' : 'pt-10')}>
+      {depth === 0 && (
+        <h2 className="text-2xl font-bold tracking-tight mb-6 border-b border-border pb-3 bg-gradient-to-r from-sky-300 to-blue-400 bg-clip-text text-transparent">
+          {node.title}
+        </h2>
+      )}
+      {depth === 1 && (
+        <h3 className="text-xs font-semibold uppercase tracking-widest text-blue-400 mb-3">
+          {node.title}
+        </h3>
+      )}
+      {depth >= 2 && (
+        <h4 className="text-sm font-semibold text-slate-400 mb-2">
+          {node.title}
+        </h4>
+      )}
       {node.blocks.length > 0 && (
         <div className="flex flex-col gap-4">
           {node.blocks.map((block, i) => (
@@ -126,17 +129,49 @@ export interface LessonViewProps {
   onBack: () => void
 }
 
+function flattenIds(nodes: LessonNode[], prefix = 's'): string[] {
+  return nodes.flatMap((node, i) => {
+    const id = `${prefix}${i}`
+    return [id, ...flattenIds(node.children ?? [], `${id}-`)]
+  })
+}
+
 export function LessonView({ roadmapNode, lessonNodes, getVis, onBack }: LessonViewProps) {
   const contentRef = useRef<HTMLDivElement>(null)
   const [activeId, setActiveId] = useState('s0')
+  const isScrollingToRef = useRef(false)
 
   useEffect(() => { setActiveId('s0') }, [roadmapNode.id])
+
+  useEffect(() => {
+    const container = contentRef.current
+    if (!container) return
+    const ids = flattenIds(lessonNodes)
+
+    function onScroll() {
+      if (isScrollingToRef.current) return
+      const containerTop = container!.getBoundingClientRect().top
+      const threshold = containerTop + 80
+      let best = ids[0]
+      for (const id of ids) {
+        const el = document.getElementById(id)
+        if (!el) continue
+        if (el.getBoundingClientRect().top <= threshold) best = id
+      }
+      setActiveId(best)
+    }
+
+    container.addEventListener('scroll', onScroll, { passive: true })
+    return () => container.removeEventListener('scroll', onScroll)
+  }, [lessonNodes])
 
   function scrollTo(id: string) {
     const el = document.getElementById(id)
     const container = contentRef.current
     if (!el || !container) return
+    isScrollingToRef.current = true
     container.scrollTop = el.getBoundingClientRect().top - container.getBoundingClientRect().top + container.scrollTop - 24
+    setTimeout(() => { isScrollingToRef.current = false }, 100)
   }
 
   function handleSelect(id: string) { setActiveId(id); scrollTo(id) }
@@ -171,7 +206,7 @@ export function LessonView({ roadmapNode, lessonNodes, getVis, onBack }: LessonV
 
         {/* Content */}
         <div ref={contentRef} className="flex-1 overflow-y-auto">
-          <div className="max-w-2xl mx-auto px-10 py-10">
+          <div className="px-14 py-10">
             <div className="flex flex-col gap-10">
               {lessonNodes.map((node, i) => (
                 <Section key={i} node={node} depth={0} id={`s${i}`} getVis={getVis} nodeId={roadmapNode.id} />
