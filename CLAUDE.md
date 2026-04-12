@@ -210,3 +210,36 @@ npm run publish
 **Do not create lesson files until the roadmap is finalised and approved.** The node `id` is a stable key — changing it after lessons exist breaks the course.
 
 **Do not add content or visualisations until the structure pass is approved.** Build in order: structure → content → visualisations.
+
+---
+
+## "Visualise this" workflow
+
+The user pastes a sentence or paragraph from a lesson and says "visualise this" (or similar).
+
+**What to do:**
+
+1. **Find the sentence** in `lesson.json` — identify which `text` block it lives in and exactly where within it.
+
+2. **Split the text block** at that sentence — break the single `content` string into two parts: everything up to and including the sentence stays in the first block, everything after goes in a new `text` block.
+
+3. **Insert a `vis` block between them** with a `prompt` field storing the original sentence:
+   ```json
+   { "type": "text", "content": "...everything up to the sentence." },
+   { "type": "vis", "file": "vis/<name>.html", "caption": "...", "prompt": "The exact sentence the user pasted" },
+   { "type": "text", "content": "Everything after the sentence..." }
+   ```
+
+4. **Create the HTML file** at `src/modules/data/lessons/<node-id>/vis/<name>.html`. Follow all vis rules (self-contained, dark background `#080d14`, accent `#3b82f6`, vanilla JS only, designed for 100% × 280px).
+
+The `prompt` field is authoring metadata — the platform ignores it, but it records exactly what the vis is supposed to illustrate. Use it as the brief when creating or editing the HTML file.
+
+---
+
+## Visualisation design principles
+
+- One insight per visualisation — resist adding more
+- Use animation to show transitions, not just end states
+- Colour-code groups consistently (same colour = same category)
+- Caption describes what to *notice*, not what is shown
+- Interactive when possible — the user should explore, not just observe
