@@ -6,3 +6,4 @@ dist
 .env.local
 .convex
 src/routeTree.gen.ts
+src/modules/data/lessons/*/vis/.screenshots

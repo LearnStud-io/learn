@@ -4,7 +4,8 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "vite dev",
+    "dev": "node scripts/dev.mjs",
+    "screenshot-vis": "node scripts/screenshot-vis.mjs",
     "build": "vite build && tsc --noEmit",
     "start": "serve -s dist -l ${PORT:-3002}",
     "publish": "node scripts/publish.mjs"
@@ -37,6 +38,8 @@
     "postcss": "^8.5.9",
     "tailwindcss": "^3.4.19",
     "typescript": "^6.0.2",
-    "vite": "^8.0.0"
+    "vite": "^8.0.0",
+    "dotenv": "^16.4.5",
+    "playwright": "^1.48.0"
   }
 }

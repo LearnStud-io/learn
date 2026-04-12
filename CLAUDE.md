@@ -211,7 +211,7 @@ npm run publish
 4. For each topic, create the lesson in three passes — do not skip ahead:
    - **Pass 1 — Structure:** Create `lesson.json` with all sections and slugs. Blocks are empty `[]`. Get approval.
    - **Pass 2 — Content:** Fill in `text` blocks with actual content. No visualisations yet. Get approval.
-   - **Pass 3 — Visualisations:** Add `vis` blocks and create the corresponding `.html` files.
+   - **Pass 3 — Visualisations:** For each vis, follow the full "Visualise this" workflow: read INDEX.md → choose technology → create HTML using primitives → screenshot and verify → update primitives if improved.
 5. Run `npm run publish`
 
 **Do not create lesson files until the roadmap is finalised and approved.** The node `id` is a stable key — changing it after lessons exist breaks the course.
@@ -255,14 +255,7 @@ The `prompt` field is authoring metadata — the platform ignores it, but it rec
 
 ## Screenshotting a vis
 
-After writing any vis, run the screenshot tool and read the image before considering it done:
-```bash
-node scripts/screenshot-vis.mjs <node-id> <vis-filename>
-# e.g. node scripts/screenshot-vis.mjs math-to-nn dot-product.html
-```
-The screenshot is saved to `vis/.screenshots/<name>.png`. Read it with the Read tool. If the layout looks wrong — clipping, bad font sizes, glow too faint — fix and re-run. Iterate until it looks right.
-
-No extra setup needed — `npm run dev` installs the playwright chromium binary automatically for everyone.
+Every vis must be screenshotted and verified before it is done — see step 7 of the "Visualise this" workflow above for the full instructions. `npm run dev` installs playwright automatically; no extra setup needed.
 
 ---
 
