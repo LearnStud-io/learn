@@ -6,9 +6,11 @@ A course is entirely defined by local files. When ready, `npm run publish` sends
 
 ## Before you do anything
 
-Ask the user: **"What do you want to learn or teach? Describe the topic and who it's for."**
+Look at the context first:
+- If the user is starting a new course — ask: **"What do you want to learn or teach? Describe the topic and who it's for."** Wait for their answer before generating any files.
+- If the user is mid-course (editing content, asking to "visualise this", updating a vis) — skip this and go directly to the relevant workflow.
 
-Wait for their answer before generating any files. Use their response to shape the course title, subtitle, roadmap structure, and lesson content.
+Use the topic description to shape the course title, subtitle, roadmap structure, and lesson content.
 
 ---
 
@@ -274,8 +276,6 @@ vis-primitives/
   three/
     setup.html    ← shell: renderer, camera, OrbitControls, resize, animate loop
 ```
-
-**Before writing a new vis:** read `src/vis-primitives/INDEX.md` — it tells you what exists and when to use each primitive. Then read the specific files that apply and inline their contents into the vis. Do not rewrite what already exists.
 
 **After confirming the vis looks right:**
 - Re-read each primitive file you inlined. Compare your implementation to the canonical version — did you write a better version of anything? If yes, update that file with the improvement.
