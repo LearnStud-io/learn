@@ -109,7 +109,9 @@ function SidebarItem({ node, depth, id, activeId, onSelect }: {
         )}
         <span className={cn(
           'text-xs leading-snug',
-          depth === 0 ? 'font-medium' : 'font-normal opacity-90',
+          !isActive && depth === 0 && 'font-medium text-foreground/80',
+          !isActive && depth === 1 && 'font-normal text-muted-foreground',
+          !isActive && depth >= 2 && 'font-normal text-muted-foreground/55',
           isActive && 'text-primary',
         )}>
           {node.title}
