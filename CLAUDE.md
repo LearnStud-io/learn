@@ -168,7 +168,7 @@ Self-contained HTML files rendered in a sandboxed iframe. Used for interactive d
 <body>
   <!-- your visualisation here -->
   <script>
-    // vanilla JS only — no external imports
+    // use p5.js or Three.js (see Technology choice below), or vanilla JS
   </script>
 </body>
 </html>
@@ -241,7 +241,26 @@ The user pastes a sentence or paragraph from a lesson and says "visualise this" 
 
 5. **Create the HTML file** at `src/modules/data/lessons/<node-id>/vis/<name>.html`. Follow all vis rules. Include an in-vis interaction hint label.
 
+6. **Screenshot and verify** — run the screenshot tool and read the image before considering it done:
+   ```bash
+   node scripts/screenshot-vis.mjs <node-id> <vis-filename>
+   ```
+   The screenshot is saved to `vis/.screenshots/<name>.png`. Read it with the Read tool. Fix and re-run until the layout looks right.
+
 The `prompt` field is authoring metadata — the platform ignores it, but it records exactly what the vis is supposed to illustrate. Use it as the brief when creating or editing the HTML file.
+
+---
+
+## Screenshotting a vis
+
+After writing any vis, run the screenshot tool and read the image before considering it done:
+```bash
+node scripts/screenshot-vis.mjs <node-id> <vis-filename>
+# e.g. node scripts/screenshot-vis.mjs math-to-nn dot-product.html
+```
+The screenshot is saved to `vis/.screenshots/<name>.png`. Read it with the Read tool. If the layout looks wrong — clipping, bad font sizes, glow too faint — fix and re-run. Iterate until it looks right.
+
+No extra setup needed — `npm run dev` installs the playwright chromium binary automatically for everyone.
 
 ---
 
