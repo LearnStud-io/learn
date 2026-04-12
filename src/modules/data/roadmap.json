@@ -1,0 +1,28 @@
+{
+  "nodes": [
+    {
+      "id": "topic-a",
+      "label": "Topic A",
+      "description": "The first topic to learn",
+      "dependsOn": []
+    },
+    {
+      "id": "topic-b",
+      "label": "Topic B",
+      "description": "Builds on Topic A",
+      "dependsOn": ["topic-a"]
+    },
+    {
+      "id": "topic-c",
+      "label": "Topic C",
+      "description": "Builds on Topic A",
+      "dependsOn": ["topic-a"]
+    },
+    {
+      "id": "topic-d",
+      "label": "Topic D",
+      "description": "Requires B and C",
+      "dependsOn": ["topic-b", "topic-c"]
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "nodes": [
+    {
+      "slug": "intro",
+      "title": "Introduction",
+      "blocks": [
+        { "type": "text", "content": "This is the first slide of Topic A." }
+      ],
+      "children": [
+        {
+          "slug": "intro-sub1",
+          "title": "Subtopic 1",
+          "blocks": [
+            { "type": "text", "content": "Subtopic 1 content goes here." }
+          ],
+          "children": [
+            {
+              "slug": "intro-sub1-deep",
+              "title": "Deep dive",
+              "blocks": [
+                { "type": "text", "content": "A third level of nesting — add as many levels as needed." }
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "intro-sub2",
+          "title": "Subtopic 2",
+          "blocks": [
+            { "type": "text", "content": "Subtopic 2 content goes here." },
+            { "type": "vis", "file": "vis/example.html", "caption": "An interactive visualisation" }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "core",
+      "title": "Core Concept",
+      "blocks": [
+        { "type": "text", "content": "Second top-level slide." }
+      ]
+    }
+  ]
+}
