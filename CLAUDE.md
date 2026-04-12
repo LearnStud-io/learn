@@ -247,24 +247,25 @@ The `prompt` field is authoring metadata — the platform ignores it, but it rec
 
 ## Primitives
 
-If `PRIMITIVES=true` is set in the course repo's `.env`, the sibling `learn` repo is available at `../learn/`.
-
-After finishing a vis, **look back at what you wrote** and ask: is any of this worth saving for next time? If yes, extract it to `src/vis-primitives/`:
+`src/vis-primitives/` is part of this repo — always available locally, no sibling repo needed.
 
 ```
 vis-primitives/
+  INDEX.md        ← read this first before writing any vis
   p5/
-    setup.html      ← shell: buttons, canvas, resize, hint footer
-    palette.js      ← P{} colour constants, DIM_RGB
-    animate.js      ← easeInOut, ANIM_SPEED, lerp-animation pattern
-    drawing.js      ← drawVBar, drawProdBar, drawBadge, drawColGlow, drawHint
+    setup.html    ← shell: buttons, canvas, resize, hint footer
+    palette.js    ← P{} colour constants, DIM_RGB
+    animate.js    ← easeInOut, ANIM_SPEED, lerp-animation pattern
+    drawing.js    ← drawVBar, drawProdBar, drawBadge, drawColGlow, drawHint
   three/
-    setup.html      ← shell: renderer, camera, OrbitControls, resize, animate loop
+    setup.html    ← shell: renderer, camera, OrbitControls, resize, animate loop
 ```
 
-**Before writing a new vis:** if `PRIMITIVES=true` is set in the course repo, read `src/vis-primitives/INDEX.md` first — it tells you what exists and when to use it. Then read the specific files that apply and inline their contents into the vis. Do not rewrite what already exists.
+**Before writing a new vis:** read `src/vis-primitives/INDEX.md` — it tells you what exists and when to use each primitive. Then read the specific files that apply and inline their contents into the vis. Do not rewrite what already exists.
 
-**After finishing a vis:** look back at what you wrote and ask: is any of this worth saving or improving for next time? If yes: add new helpers or update existing ones in `src/vis-primitives/` (a better version of something already there should replace it), then update `src/vis-primitives/INDEX.md` to reflect any additions or changes. Not one-off layout code specific to a single concept — only helpers you'd reach for again.
+**After finishing a vis:** look back at what you wrote and ask: is any of this worth saving or improving for next time?
+- If `PRIMITIVES=true` — add new helpers or update existing ones in `src/vis-primitives/`, update `INDEX.md`, then push `learn`. Creators who pull will get the latest.
+- If `PRIMITIVES=false` — do not update primitives. Read only.
 
 ---
 
