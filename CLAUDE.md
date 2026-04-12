@@ -175,12 +175,19 @@ Self-contained HTML files rendered in a sandboxed iframe. Used for interactive d
 ```
 
 **Rules:**
-- Must be fully self-contained — no external CDN links, no `fetch()` calls
+- No `fetch()` calls, no external resources except the two allowed libraries below
 - Use the dark background `#080d14` to match the platform theme
 - Use accent colour `#3b82f6` (blue) for highlights
 - Use text colour `#e2e8f0` for primary text, `#64748b` for muted text
-- Vanilla JS only — no frameworks, no imports
 - The iframe is `width: 100%, height: 280px` — design for that viewport
+- Always include a brief interaction hint inside the vis (e.g. a small fixed label: "← toggle", "drag to rotate", "hover a node") so the learner knows what to do
+
+**Technology choice — evaluate before writing code:**
+- **Three.js** — use when 3D genuinely aids understanding (e.g. high-dimensional spaces, rotatable geometry, depth perception). Load via CDN:
+  `<script src="https://cdn.jsdelivr.net/npm/three@0.160/build/three.min.js"></script>`
+- **p5.js** — use for animated 2D diagrams, step-by-step illustrations, interactive charts. Load via CDN:
+  `<script src="https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.min.js"></script>`
+- **Vanilla JS** — acceptable for simple static layouts (bar charts, toggle panels) where animation adds no insight
 
 ---
 
@@ -230,7 +237,9 @@ The user pastes a sentence or paragraph from a lesson and says "visualise this" 
    { "type": "text", "content": "Everything after the sentence..." }
    ```
 
-4. **Create the HTML file** at `src/modules/data/lessons/<node-id>/vis/<name>.html`. Follow all vis rules (self-contained, dark background `#080d14`, accent `#3b82f6`, vanilla JS only, designed for 100% × 280px).
+4. **Choose the technology** — ask: does 3D genuinely help the learner grasp this concept? If yes, use Three.js. If not, use p5.js for animation or vanilla JS for simple layouts.
+
+5. **Create the HTML file** at `src/modules/data/lessons/<node-id>/vis/<name>.html`. Follow all vis rules. Include an in-vis interaction hint label.
 
 The `prompt` field is authoring metadata — the platform ignores it, but it records exactly what the vis is supposed to illustrate. Use it as the brief when creating or editing the HTML file.
 
@@ -243,3 +252,5 @@ The `prompt` field is authoring metadata — the platform ignores it, but it rec
 - Colour-code groups consistently (same colour = same category)
 - Caption describes what to *notice*, not what is shown
 - Interactive when possible — the user should explore, not just observe
+- Always show a brief in-vis instruction (what to click, drag, or hover) — never leave the learner guessing how to interact
+- Prefer 3D (Three.js) only when depth or rotation reveals something 2D cannot — otherwise p5.js or vanilla JS is simpler and loads faster
