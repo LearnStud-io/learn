@@ -5,33 +5,56 @@ import { deriveEdges } from '../modules/data'
 import { colors, font } from '../modules/theme'
 
 const NODE_W = 220
-const NODE_H = 64
 const RANK_SEP = 90
 const NODE_SEP = 64
 const START_LABEL_H = 28
+const DESC_LINE_H = 13
+const DESC_MAX_CHARS = 30
+const NODE_BASE_H = 62  // fits label + 1 desc line
+
+function wrapText(text: string, maxChars: number): string[] {
+  if (!text) return []
+  const words = text.split(' ')
+  const lines: string[] = []
+  let current = ''
+  for (const word of words) {
+    if (!current) { current = word }
+    else if (current.length + 1 + word.length <= maxChars) { current += ' ' + word }
+    else { lines.push(current); current = word }
+  }
+  if (current) lines.push(current)
+  return lines
+}
+
+function nodeHeight(description: string): number {
+  const lines = wrapText(description, DESC_MAX_CHARS)
+  return NODE_BASE_H + Math.max(0, lines.length - 1) * DESC_LINE_H
+}
 
 interface LayoutNode extends RoadmapNode {
   x: number
   y: number
+  h: number
 }
 
 function computeLayout(nodes: RoadmapNode[], edges: RoadmapEdge[]) {
   const g = new dagre.graphlib.Graph()
   g.setGraph({ rankdir: 'TB', nodesep: NODE_SEP, ranksep: RANK_SEP, marginx: 40, marginy: 40 })
   g.setDefaultEdgeLabel(() => ({}))
-  nodes.forEach(n => g.setNode(n.id, { width: NODE_W, height: NODE_H }))
+  nodes.forEach(n => { const h = nodeHeight(n.description); g.setNode(n.id, { width: NODE_W, height: h }) })
   edges.forEach(e => g.setEdge(e.from, e.to))
   dagre.layout(g)
   const layoutNodes: LayoutNode[] = nodes.map(n => {
     const { x, y } = g.node(n.id)
-    return { ...n, x: x - NODE_W / 2, y: y - NODE_H / 2 }
+    const h = nodeHeight(n.description)
+    return { ...n, x: x - NODE_W / 2, y: y - h / 2, h }
   })
   const graph = g.graph()
   return { layoutNodes, graphW: graph.width ?? 0, graphH: graph.height ?? 0 }
 }
 
 function RoadmapEdges({ layoutNodes, edges }: { layoutNodes: LayoutNode[]; edges: RoadmapEdge[] }) {
-  const posMap = Object.fromEntries(layoutNodes.map(n => [n.id, { x: n.x + NODE_W / 2, y: n.y + NODE_H / 2 }]))
+  const posMap = Object.fromEntries(layoutNodes.map(n => [n.id, { x: n.x + NODE_W / 2, y: n.y + n.h / 2, h: n.h }]))
   return (
     <>
       <defs>
@@ -56,8 +79,8 @@ function RoadmapEdges({ layoutNodes, edges }: { layoutNodes: LayoutNode[]; edges
         return (
           <line
             key={`${edge.from}-${edge.to}`}
-            x1={f.x + ux * (NODE_H / 2)} y1={f.y + uy * (NODE_H / 2)}
-            x2={t.x - ux * (NODE_H / 2 + 6)} y2={t.y - uy * (NODE_H / 2 + 6)}
+            x1={f.x + ux * (f.h / 2)} y1={f.y + uy * (f.h / 2)}
+            x2={t.x - ux * (t.h / 2 + 6)} y2={t.y - uy * (t.h / 2 + 6)}
             stroke={colors.edge} strokeWidth={1.5} markerEnd="url(#arrow)"
             opacity={0.7}
           />
@@ -73,6 +96,7 @@ function RoadmapNodeCard({ node, onClick }: { node: LayoutNode; onClick: () => v
   const filterId = `shadow-${node.id}`
   const borderColor = hovered ? colors.borderActive : colors.border
   const bgColor = hovered ? colors.surfaceHover : colors.surface
+  const descLines = wrapText(node.description, DESC_MAX_CHARS)
 
   return (
     <g
@@ -83,14 +107,14 @@ function RoadmapNodeCard({ node, onClick }: { node: LayoutNode; onClick: () => v
       onMouseLeave={() => setHovered(false)}
     >
       <defs>
-        <clipPath id={clipId}><rect width={NODE_W} height={NODE_H} rx={10} /></clipPath>
+        <clipPath id={clipId}><rect width={NODE_W} height={node.h} rx={10} /></clipPath>
         <filter id={filterId} x="-20%" y="-20%" width="140%" height="140%">
           <feDropShadow dx="0" dy="0" stdDeviation={hovered ? '6' : '2'}
             floodColor={hovered ? colors.accent : '#000'} floodOpacity={hovered ? '0.3' : '0.4'} />
         </filter>
       </defs>
       <rect
-        width={NODE_W} height={NODE_H} rx={10}
+        width={NODE_W} height={node.h} rx={10}
         fill={bgColor}
         stroke={borderColor} strokeWidth={hovered ? 1.5 : 1}
         filter={`url(#${filterId})`}
@@ -105,9 +129,11 @@ function RoadmapNodeCard({ node, onClick }: { node: LayoutNode; onClick: () => v
           fontSize={13} fontWeight={600} fontFamily={font}>
           {node.label}
         </text>
-        <text x={NODE_W / 2} y={46} textAnchor="middle"
+        <text x={NODE_W / 2} y={44} textAnchor="middle"
           fill={colors.textSecondary} fontSize={10} fontFamily={font}>
-          {node.description}
+          {descLines.map((line, i) => (
+            <tspan key={i} x={NODE_W / 2} dy={i === 0 ? 0 : DESC_LINE_H}>{line}</tspan>
+          ))}
         </text>
       </g>
     </g>
