@@ -3,6 +3,23 @@ import type { RoadmapNode, LessonNode, Block } from '../modules/data'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { ChevronRight, ChevronDown, ArrowLeft } from 'lucide-react'
+import katex from 'katex'
+import 'katex/dist/katex.min.css'
+
+// Render text that may contain $...$ (inline) or $$...$$ (display) LaTeX.
+// Splits on delimiters, HTML-escapes plain segments, renders math with KaTeX.
+function renderMathContent(text: string): string {
+  const segments = text.split(/(\$\$[\s\S]+?\$\$|\$[^$\n]+?\$)/g)
+  return segments.map(seg => {
+    if (seg.startsWith('$$') && seg.endsWith('$$')) {
+      return katex.renderToString(seg.slice(2, -2), { displayMode: true, throwOnError: false })
+    }
+    if (seg.startsWith('$') && seg.endsWith('$')) {
+      return katex.renderToString(seg.slice(1, -1), { displayMode: false, throwOnError: false })
+    }
+    return seg.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+  }).join('')
+}
 
 function VisBlock({ html, caption, height = 280 }: { html: string; caption?: string; height?: number }) {
   return (
@@ -26,6 +43,14 @@ function ContentBlock({ block, getVis, nodeId }: {
   nodeId: string
 }) {
   if (block.type === 'text') {
+    if (block.content.includes('$')) {
+      return (
+        <div
+          className="text-[15px] leading-[1.85] text-slate-300 whitespace-pre-line [&_.katex-display]:my-4 [&_.katex-display]:overflow-x-auto"
+          dangerouslySetInnerHTML={{ __html: renderMathContent(block.content) }}
+        />
+      )
+    }
     return (
       <p className="text-[15px] leading-[1.85] text-slate-300 whitespace-pre-line">
         {block.content}

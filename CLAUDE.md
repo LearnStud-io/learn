@@ -140,8 +140,32 @@ Content for one roadmap node. A tree of sections, each with content blocks.
 - `title` — the section heading shown in the sidebar and content area
 - `blocks` — ordered list of content blocks; can be empty `[]`
 - `children` — nested subsections; can be empty `[]`; nesting can go as deep as needed
-- Block type `text` — plain text content, use `\n` for line breaks
+- Block type `text` — plain text content, use `\n` for line breaks; supports LaTeX math via KaTeX (see **Math in text blocks** below)
 - Block type `vis` — references an HTML file in the `vis/` folder; `caption` is optional; `height` is optional (integer px, defaults to 280) — set it when the vis needs more or less vertical space
+
+---
+
+## Math in text blocks
+
+Text blocks support LaTeX math rendered by KaTeX. Use standard delimiters:
+
+- **Inline math** — wrap in single `$`: `the gradient $\nabla L$ points uphill`
+- **Display math** — wrap in double `$$` on its own line:
+
+```
+$$
+\text{cosine similarity} = \frac{a \cdot b}{\|a\| \times \|b\|}
+$$
+```
+
+The renderer detects the `$` delimiter automatically — no block type change needed. If your text contains a literal dollar sign (e.g. a price), escape it: `\$5.99`.
+
+Common patterns for this course:
+- Partial derivative: `$\frac{\partial L}{\partial W_{ij}}$`
+- Matrix multiply: `$W \in \mathbb{R}^{512 \times 50000}$`
+- Norm: `$\|a\|$`
+- Dot product: `$a \cdot b$`
+- Update rule: `$W \leftarrow W - \alpha \nabla L$`
 
 ---
 
