@@ -4,13 +4,13 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { ChevronRight, ChevronDown, ArrowLeft } from 'lucide-react'
 
-function VisBlock({ html, caption }: { html: string; caption?: string }) {
+function VisBlock({ html, caption, height = 280 }: { html: string; caption?: string; height?: number }) {
   return (
     <div className="flex flex-col gap-2 my-2">
       <iframe
         srcDoc={html}
         className="w-full rounded-lg border border-border bg-background"
-        style={{ height: 280 }}
+        style={{ height }}
         sandbox="allow-scripts"
       />
       {caption && (
@@ -35,7 +35,7 @@ function ContentBlock({ block, getVis, nodeId }: {
   if (block.type === 'vis') {
     const html = getVis(nodeId, block.file)
     if (!html) return null
-    return <VisBlock html={html} caption={block.caption} />
+    return <VisBlock html={html} caption={block.caption} height={block.height} />
   }
   return null
 }

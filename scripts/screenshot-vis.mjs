@@ -2,8 +2,9 @@
 // npm run dev installs playwright chromium automatically on first run.
 //
 // Usage:
-//   node scripts/screenshot-vis.mjs <node-id> <vis-filename>
+//   node scripts/screenshot-vis.mjs <node-id> <vis-filename> [height]
 //   node scripts/screenshot-vis.mjs math-to-nn dot-product.html
+//   node scripts/screenshot-vis.mjs math-to-nn dot-product.html 360
 
 import { chromium } from 'playwright'
 import { createServer } from 'http'
@@ -14,7 +15,8 @@ import { fileURLToPath } from 'url'
 import { config } from 'dotenv'
 config()
 
-const [nodeId, visFile] = process.argv.slice(2)
+const [nodeId, visFile, heightArg] = process.argv.slice(2)
+const visHeight = heightArg ? parseInt(heightArg, 10) : 280
 if (!nodeId || !visFile) {
   console.error('Usage: node scripts/screenshot-vis.mjs <node-id> <vis-filename>')
   process.exit(1)
@@ -55,7 +57,7 @@ const { port } = server.address()
 const browser = await chromium.launch()
 const page    = await browser.newPage()
 
-await page.setViewportSize({ width: 400, height: 280 })
+await page.setViewportSize({ width: 400, height: visHeight })
 await page.goto(`http://localhost:${port}/${visFile}`, { waitUntil: 'networkidle' })
 await page.waitForTimeout(1200)   // let p5/three animations settle
 await page.screenshot({ path: screenshotPath })

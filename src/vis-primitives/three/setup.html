@@ -1,7 +1,9 @@
 <!-- Standard Three.js vis shell — use when 3D rotation/depth aids understanding.
      iframe viewport: width 100%, height 280px.
      Buttons are absolute-positioned over the canvas (z-index:10).
-     OrbitControls: drag to rotate, scroll to zoom. -->
+     Orbit: drag to rotate (simple spherical orbit — no OrbitControls dep needed).
+     NOTE: three@0.160 dropped examples/js/controls/OrbitControls.js (removed in r152).
+           Use the spherical orbit pattern below instead. -->
 
 <!doctype html>
 <html>
@@ -24,7 +26,7 @@ body { background:#080d14; font-family:system-ui,sans-serif; height:100vh; overf
 
 #hint {
   position:absolute; bottom:4px; left:0; right:0;
-  text-align:center; font-size:9px; color:#2d3a50;
+  text-align:center; font-size:9px; color:#1e293b;
   pointer-events:none;
 }
 </style>
@@ -35,15 +37,13 @@ body { background:#080d14; font-family:system-ui,sans-serif; height:100vh; overf
   <button class="btn active" id="b1" onclick="setState(0)">state A</button>
   <button class="btn"        id="b2" onclick="setState(1)">state B</button>
 </div>
-<div id="hint">drag to rotate  •  scroll to zoom</div>
+<div id="hint">drag to rotate</div>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.160/build/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.160/examples/js/controls/OrbitControls.js"></script>
-<!-- paste palette.js contents here if needed -->
 <script>
 
-// ── scene setup ───────────────────────────────────────────────────────────────
-const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
+// ── renderer ──────────────────────────────────────────────────────────────────
+const renderer = new THREE.WebGLRenderer({ antialias: true })
 renderer.setPixelRatio(window.devicePixelRatio)
 renderer.setSize(window.innerWidth, window.innerHeight)
 renderer.setClearColor(0x080d14, 1)
@@ -51,14 +51,34 @@ document.body.appendChild(renderer.domElement)
 
 const scene  = new THREE.Scene()
 const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 100)
-camera.position.set(0, 0, 5)
+const TARGET = new THREE.Vector3(0, 0, 0)  // what the camera looks at
 
-const controls = new THREE.OrbitControls(camera, renderer.domElement)
-controls.enableDamping = true
-controls.dampingFactor = 0.08
-controls.enablePan     = false
-controls.minDistance   = 2
-controls.maxDistance   = 10
+// ── spherical orbit (drag to rotate, auto-rotate until first drag) ────────────
+let phi = 1.0, theta = 0.8        // starting angles (radians)
+const CAM_R = 5.0                  // camera distance from target
+
+function posCamera() {
+  camera.position.set(
+    CAM_R * Math.sin(phi) * Math.cos(theta),
+    CAM_R * Math.cos(phi),
+    CAM_R * Math.sin(phi) * Math.sin(theta)
+  )
+  camera.lookAt(TARGET)
+}
+posCamera()
+
+let drag = null, autoRot = true
+renderer.domElement.addEventListener('pointerdown', e => {
+  drag = { x: e.clientX, y: e.clientY, phi, theta }
+  autoRot = false
+})
+window.addEventListener('pointermove', e => {
+  if (!drag) return
+  theta = drag.theta - (e.clientX - drag.x) * 0.009
+  phi   = Math.max(0.2, Math.min(1.4, drag.phi + (e.clientY - drag.y) * 0.009))
+  posCamera()
+})
+window.addEventListener('pointerup', () => { drag = null })
 
 window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight
@@ -70,17 +90,17 @@ window.addEventListener('resize', () => {
 function setState(i) {
   document.getElementById('b1').className = 'btn' + (i === 0 ? ' active' : '')
   document.getElementById('b2').className = 'btn' + (i === 1 ? ' active' : '')
-  // ... update scene
+  // ... update scene objects here
 }
 
 // ── scene objects ─────────────────────────────────────────────────────────────
-// ... add meshes, lines, labels here
+// ... add meshes, ArrowHelpers, Lines, etc. here
 
 // ── animation loop ────────────────────────────────────────────────────────────
 function animate() {
   requestAnimationFrame(animate)
-  controls.update()
-  // ... update animations
+  if (autoRot) { theta += 0.004; posCamera() }
+  // ... update per-frame state here
   renderer.render(scene, camera)
 }
 animate()

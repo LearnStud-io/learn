@@ -49,7 +49,8 @@ Includes: buttons (absolute, z-index:10), canvas creation, `windowResized`, hint
 
 ### `three/setup.html`
 **Use this as the starting shell for every Three.js vis.**
-Includes: `WebGLRenderer` with alpha, `PerspectiveCamera`, `OrbitControls` (drag/zoom), resize handler, animate loop skeleton, buttons, hint label.
+Includes: `WebGLRenderer`, `PerspectiveCamera`, spherical orbit (drag to rotate, auto-rotate until first drag), resize handler, animate loop skeleton, buttons, hint label.
+**Note:** Does NOT use OrbitControls — `examples/js/controls/OrbitControls.js` was removed from three@0.160. The built-in spherical orbit replaces it.
 
 ---
 

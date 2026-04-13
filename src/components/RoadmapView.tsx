@@ -10,9 +10,11 @@ const NODE_W = 220
 const RANK_SEP = 90
 const NODE_SEP = 64
 const START_LABEL_H = 28
+const LABEL_LINE_H = 16
+const LABEL_MAX_CHARS = 26
 const DESC_LINE_H = 13
 const DESC_MAX_CHARS = 30
-const NODE_BASE_H = 62  // fits label + 1 desc line
+const NODE_BASE_H = 62  // fits label (1 line) + 1 desc line
 
 function wrapText(text: string, maxChars: number): string[] {
   if (!text) return []
@@ -28,9 +30,12 @@ function wrapText(text: string, maxChars: number): string[] {
   return lines
 }
 
-function nodeHeight(description: string): number {
-  const lines = wrapText(description, DESC_MAX_CHARS)
-  return NODE_BASE_H + Math.max(0, lines.length - 1) * DESC_LINE_H
+function nodeHeight(label: string, description: string): number {
+  const labelLines = wrapText(label, LABEL_MAX_CHARS)
+  const descLines = wrapText(description, DESC_MAX_CHARS)
+  return NODE_BASE_H +
+    Math.max(0, labelLines.length - 1) * LABEL_LINE_H +
+    Math.max(0, descLines.length - 1) * DESC_LINE_H
 }
 
 interface LayoutNode extends RoadmapNode {
@@ -43,12 +48,12 @@ function computeLayout(nodes: RoadmapNode[], edges: RoadmapEdge[]) {
   const g = new dagre.graphlib.Graph()
   g.setGraph({ rankdir: 'TB', nodesep: NODE_SEP, ranksep: RANK_SEP, marginx: 40, marginy: 40 })
   g.setDefaultEdgeLabel(() => ({}))
-  nodes.forEach(n => { const h = nodeHeight(n.description); g.setNode(n.id, { width: NODE_W, height: h }) })
+  nodes.forEach(n => { const h = nodeHeight(n.label, n.description); g.setNode(n.id, { width: NODE_W, height: h }) })
   edges.forEach(e => g.setEdge(e.from, e.to))
   dagre.layout(g)
   const layoutNodes: LayoutNode[] = nodes.map(n => {
     const { x, y } = g.node(n.id)
-    const h = nodeHeight(n.description)
+    const h = nodeHeight(n.label, n.description)
     return { ...n, x: x - NODE_W / 2, y: y - h / 2, h }
   })
   const graph = g.graph()
@@ -98,7 +103,10 @@ function RoadmapNodeCard({ node, onClick }: { node: LayoutNode; onClick: () => v
   const filterId = `shadow-${node.id}`
   const borderColor = hovered ? colors.borderActive : colors.border
   const bgColor = hovered ? colors.surfaceHover : colors.surface
+  const labelLines = wrapText(node.label, LABEL_MAX_CHARS)
   const descLines = wrapText(node.description, DESC_MAX_CHARS)
+  const labelExtraH = Math.max(0, labelLines.length - 1) * LABEL_LINE_H
+  const descY = 44 + labelExtraH
 
   return (
     <g
@@ -129,9 +137,11 @@ function RoadmapNodeCard({ node, onClick }: { node: LayoutNode; onClick: () => v
         <text x={NODE_W / 2} y={28} textAnchor="middle"
           fill={hovered ? colors.accentHover : colors.textPrimary}
           fontSize={13} fontWeight={600} fontFamily={font}>
-          {node.label}
+          {labelLines.map((line, i) => (
+            <tspan key={i} x={NODE_W / 2} dy={i === 0 ? 0 : LABEL_LINE_H}>{line}</tspan>
+          ))}
         </text>
-        <text x={NODE_W / 2} y={44} textAnchor="middle"
+        <text x={NODE_W / 2} y={descY} textAnchor="middle"
           fill={colors.textSecondary} fontSize={10} fontFamily={font}>
           {descLines.map((line, i) => (
             <tspan key={i} x={NODE_W / 2} dy={i === 0 ? 0 : DESC_LINE_H}>{line}</tspan>

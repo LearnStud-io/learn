@@ -65,6 +65,7 @@ function flattenSections(nodes, nodeId, parentSlug = null, out = { sections: [],
         content: block.type === 'text' ? block.content : undefined,
         file: block.type === 'vis' ? block.file : undefined,
         caption: block.caption ?? undefined,
+        height: block.height ?? undefined,
         position: j,
       })
     })

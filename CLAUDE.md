@@ -141,7 +141,7 @@ Content for one roadmap node. A tree of sections, each with content blocks.
 - `blocks` — ordered list of content blocks; can be empty `[]`
 - `children` — nested subsections; can be empty `[]`; nesting can go as deep as needed
 - Block type `text` — plain text content, use `\n` for line breaks
-- Block type `vis` — references an HTML file in the `vis/` folder; `caption` is optional
+- Block type `vis` — references an HTML file in the `vis/` folder; `caption` is optional; `height` is optional (integer px, defaults to 280) — set it when the vis needs more or less vertical space
 
 ---
 
@@ -181,12 +181,13 @@ Self-contained HTML files rendered in a sandboxed iframe. Used for interactive d
 - Use the dark background `#080d14` to match the platform theme
 - Use accent colour `#3b82f6` (blue) for highlights
 - Use text colour `#e2e8f0` for primary text, `#64748b` for muted text
-- The iframe is `width: 100%, height: 280px` — design for that viewport
+- The iframe is `width: 100%` and defaults to `height: 280px` — design for whatever height you set in the `vis` block's `height` field (omit for 280px default)
 - Always include a brief interaction hint inside the vis (e.g. a small fixed label: "← toggle", "drag to rotate", "hover a node") so the learner knows what to do
 
 **Technology choice — evaluate before writing code:**
 - **Three.js** — use when 3D genuinely aids understanding (e.g. high-dimensional spaces, rotatable geometry, depth perception). Load via CDN:
   `<script src="https://cdn.jsdelivr.net/npm/three@0.160/build/three.min.js"></script>`
+  Do NOT load `examples/js/controls/OrbitControls.js` — it was removed in r152. Use the spherical orbit from `three/setup.html` instead.
 - **p5.js** — use for animated 2D diagrams, step-by-step illustrations, interactive charts. Load via CDN:
   `<script src="https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.min.js"></script>`
 - **Vanilla JS** — acceptable for simple static layouts (bar charts, toggle panels) where animation adds no insight
@@ -247,8 +248,9 @@ The user pastes a sentence or paragraph from a lesson and says "visualise this" 
 
 7. **Screenshot and verify** — run the screenshot tool and read the image before considering it done:
    ```bash
-   node scripts/screenshot-vis.mjs <node-id> <vis-filename>
+   node scripts/screenshot-vis.mjs <node-id> <vis-filename> [height]
    ```
+   Pass the `height` if the vis block has a custom height (e.g. `360`). Defaults to 280 if omitted.
    The screenshot is saved to `vis/.screenshots/<name>.png`. Read it with the Read tool. Fix and re-run until the layout looks right.
 
 The `prompt` field is authoring metadata — the platform ignores it, but it records exactly what the vis is supposed to illustrate. Use it as the brief when creating or editing the HTML file.
@@ -294,4 +296,22 @@ vis-primitives/
 - Caption describes what to *notice*, not what is shown
 - Interactive when possible — the user should explore, not just observe
 - Always show a brief in-vis instruction (what to click, drag, or hover) — never leave the learner guessing how to interact
+- Always give the first element (buttons/title) at least 10–12px from the top edge, and the last element (hint text) at least 10px from the bottom edge — never let UI elements sit flush against the canvas border
 - Prefer 3D (Three.js) only when depth or rotation reveals something 2D cannot — otherwise p5.js or vanilla JS is simpler and loads faster
+
+### Text contrast on the dark background (`#080d14`)
+
+Use this hierarchy — never go darker than `#475569` for text the learner needs to read:
+
+| Role | Colour |
+|------|--------|
+| Primary values / numbers the learner watches | `#cbd5e1` |
+| Secondary labels (angle, formula breakdown) | `#94a3b8` |
+| Muted / supporting text | `#64748b` |
+| Hint footer | `#475569` |
+
+Avoid `#334155` or darker for any readable text — it blends into the background.
+
+### Reset button
+
+Any explorer-style vis where the learner edits values should include a reset button that restores the preset for the current state. Style it as a secondary action — lighter border and muted colour — placed alongside the main toggle buttons but visually distinct (e.g. `↺ reset`).

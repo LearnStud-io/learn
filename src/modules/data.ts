@@ -17,7 +17,7 @@ export interface RoadmapEdge {
 
 export type Block =
   | { type: 'text'; content: string }
-  | { type: 'vis'; file: string; caption?: string; prompt?: string }
+  | { type: 'vis'; file: string; caption?: string; prompt?: string; height?: number }
 
 export interface LessonNode {
   slug: string
