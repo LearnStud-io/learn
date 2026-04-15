@@ -156,9 +156,10 @@ export interface RoadmapViewProps {
   onNodeClick: (nodeId: string) => void
   header?: React.ReactNode
   storageKey?: string
+  containerStyle?: React.CSSProperties
 }
 
-export function RoadmapView({ nodes, onNodeClick, header, storageKey }: RoadmapViewProps) {
+export function RoadmapView({ nodes, onNodeClick, header, storageKey, containerStyle }: RoadmapViewProps) {
   const key = storageKey ?? STORAGE_KEY_PREFIX
   const edges = deriveEdges(nodes)
   const { layoutNodes, graphW, graphH } = computeLayout(nodes, edges)
@@ -264,7 +265,7 @@ export function RoadmapView({ nodes, onNodeClick, header, storageKey }: RoadmapV
   const { x: panX, y: panY } = pan ?? { x: 0, y: 0 }
 
   return (
-    <div style={{ height: '100vh', background: colors.bg, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+    <div style={{ height: '100vh', background: colors.bg, display: 'flex', flexDirection: 'column', overflow: 'hidden', ...containerStyle }}>
       {header}
       <svg
         ref={svgRef}

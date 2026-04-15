@@ -30,6 +30,8 @@ export interface Metadata {
   title: string
   subtitle: string
   version: string
+  overview?: string
+  goal?: string
 }
 
 // ── local loaders (file-based, for creator / dev mode) ────────────────────────

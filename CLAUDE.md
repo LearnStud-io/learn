@@ -1,3 +1,26 @@
+# Course Context
+
+**Course:** Mechanistic Interpretability — A Builder's Guide
+**Approach:** Top-down, builder-first — each stage produces a working tool before diving into theory
+**Learner profile:** Fullstack developer with CS degree; knows basic linear algebra and calculus; learns by doing; goal is to build tools for exploring AI internals
+
+### The 5-stage roadmap
+
+| Stage | Label | What you build |
+|-------|-------|---------------|
+| 1 | The Explorer | Token/logit viewer — first window into a model |
+| 2 | The Anatomy | Logit lens — watch predictions form layer by layer |
+| 3 | The Surgeon | Activation patching tool — trace which head does what |
+| 4 | The Archaeologist | Sparse autoencoder + feature explorer |
+| 5 | The Cartographer | Circuit graph visualizer — map full component composition |
+
+### Data fields
+
+`metadata.json` supports `title`, `subtitle`, `version`, `overview`, and `goal`.
+`overview` and `goal` are displayed in the left sidebar of the roadmap page.
+
+---
+
 # LearnStudio Course Authoring
 
 You are helping create a course for LearnStudio — a platform that renders structured learning roadmaps with interactive lessons.
@@ -37,9 +60,13 @@ One folder per roadmap node that has lesson content. The folder name must exactl
 {
   "title": "Binary Search Trees",
   "subtitle": "From fundamentals to balanced trees",
-  "version": "0.1.0"
+  "version": "0.1.0",
+  "goal": "What will the learner be able to do by the end?",
+  "overview": "A short description of what this course is about and why it matters."
 }
 ```
+
+`goal` and `overview` are optional but recommended — they appear in the sidebar alongside the roadmap.
 
 ---
 

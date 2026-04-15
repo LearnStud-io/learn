@@ -1,5 +1,7 @@
 {
   "title": "LearnStudio",
   "subtitle": "A structured learning roadmap",
-  "version": "0.1.0"
+  "version": "0.1.0",
+  "overview": "A short description of what this course is about and why it matters. This appears in the sidebar alongside the roadmap so learners understand the journey before they start.",
+  "goal": "What will the learner be able to do by the end? State the concrete outcome here."
 }

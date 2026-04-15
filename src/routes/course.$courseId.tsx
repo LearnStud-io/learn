@@ -4,7 +4,7 @@ import type { RoadmapNode } from '~/modules/data'
 const API_URL = import.meta.env.VITE_API_URL ?? 'https://create.learnstud.io'
 
 export interface CourseData {
-  course: { title: string; subtitle: string; version: string }
+  course: { title: string; subtitle: string; version: string; overview: string; goal: string }
   nodes: RoadmapNode[]
 }
 
