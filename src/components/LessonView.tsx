@@ -3,61 +3,32 @@ import type { RoadmapNode, LessonNode, Block } from '../modules/data'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { ChevronRight, ChevronDown, ArrowLeft } from 'lucide-react'
-import katex from 'katex'
 import 'katex/dist/katex.min.css'
+import ReactMarkdown from 'react-markdown'
+import remarkMath from 'remark-math'
+import remarkGfm from 'remark-gfm'
+import rehypeKatex from 'rehype-katex'
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
+import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism'
 
-// ── Text rendering: math + inline code ───────────────────────────────────────
-
-function renderTextContent(text: string): string {
-  const segments = text.split(/(\$\$[\s\S]+?\$\$|\$[^$\n]+?\$|`[^`\n]+`)/g)
-  return segments.map(seg => {
-    if (seg.startsWith('$$') && seg.endsWith('$$'))
-      return katex.renderToString(seg.slice(2, -2), { displayMode: true, throwOnError: false })
-    if (seg.startsWith('$') && seg.endsWith('$'))
-      return katex.renderToString(seg.slice(1, -1), { displayMode: false, throwOnError: false })
-    if (seg.startsWith('`') && seg.endsWith('`')) {
-      const code = seg.slice(1, -1).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-      return `<code class="inline-code">${code}</code>`
-    }
-    return seg.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-  }).join('')
-}
-
-// ── Fenced code block parser ──────────────────────────────────────────────────
-
-interface Segment { type: 'text' | 'code'; content: string; lang?: string }
-
-function parseSegments(text: string): Segment[] {
-  const out: Segment[] = []
-  const re = /```(\w*)\n?([\s\S]*?)```/g
-  let last = 0
-  let m: RegExpExecArray | null
-  while ((m = re.exec(text)) !== null) {
-    const before = text.slice(last, m.index).trim()
-    if (before) out.push({ type: 'text', content: before })
-    out.push({ type: 'code', content: m[2].trimEnd(), lang: m[1] || undefined })
-    last = m.index + m[0].length
-  }
-  const rest = text.slice(last).trim()
-  if (rest) out.push({ type: 'text', content: rest })
-  return out
-}
-
-// ── Components ────────────────────────────────────────────────────────────────
+// ── Code block ────────────────────────────────────────────────────────────────
 
 function CodeBlock({ content, lang }: { content: string; lang?: string }) {
   return (
-    <div className="relative my-1 rounded-lg overflow-hidden border border-border/50">
+    <div className="my-1 rounded-lg overflow-hidden border border-border/50 text-[13px]">
       {lang && (
-        <div className="flex items-center justify-between px-4 py-2 bg-[#161b22] border-b border-border/50">
+        <div className="px-4 py-2 bg-[#161b22] border-b border-border/50">
           <span className="text-[11px] text-muted-foreground/60 font-mono">{lang}</span>
         </div>
       )}
-      <pre className="bg-[#0d1117] px-5 py-4 overflow-x-auto m-0">
-        <code className="text-[13px] leading-[1.75] text-[#e6edf3] font-mono whitespace-pre">
-          {content}
-        </code>
-      </pre>
+      <SyntaxHighlighter
+        language={lang ?? 'text'}
+        style={oneDark}
+        customStyle={{ margin: 0, borderRadius: 0, fontSize: '13px', lineHeight: '1.75' }}
+        codeTagProps={{ style: { fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace' } }}
+      >
+        {content}
+      </SyntaxHighlighter>
     </div>
   )
 }
@@ -84,20 +55,38 @@ function ContentBlock({ block, getVis, nodeId }: {
   nodeId: string
 }) {
   if (block.type === 'text') {
-    const segments = parseSegments(block.content)
     return (
-      <div className="flex flex-col gap-3">
-        {segments.map((seg, i) =>
-          seg.type === 'code'
-            ? <CodeBlock key={i} content={seg.content} lang={seg.lang} />
-            : (
-              <div
-                key={i}
-                className="text-[15px] leading-[1.85] text-foreground/72 whitespace-pre-line [&_.katex-display]:my-4 [&_.katex-display]:overflow-x-auto [&_.inline-code]:bg-[#161b22] [&_.inline-code]:text-[#e6edf3] [&_.inline-code]:px-1.5 [&_.inline-code]:py-0.5 [&_.inline-code]:rounded [&_.inline-code]:text-[13px] [&_.inline-code]:font-mono [&_.inline-code]:border [&_.inline-code]:border-border/40"
-                dangerouslySetInnerHTML={{ __html: renderTextContent(seg.content) }}
-              />
-            )
-        )}
+      <div className="
+        prose prose-invert max-w-none
+        prose-p:text-[15px] prose-p:leading-[1.85] prose-p:text-foreground/72
+        prose-headings:text-foreground prose-headings:font-semibold
+        prose-strong:text-foreground/90 prose-strong:font-semibold
+        prose-em:text-foreground/70
+        prose-li:text-[15px] prose-li:leading-[1.85] prose-li:text-foreground/72
+        prose-ul:my-3 prose-ol:my-3
+        prose-code:bg-[#161b22] prose-code:text-[#e6edf3] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-[13px] prose-code:font-mono prose-code:border prose-code:border-border/40 prose-code:before:content-none prose-code:after:content-none
+        prose-pre:p-0 prose-pre:bg-transparent prose-pre:border-none
+        [&_.katex-display]:my-4 [&_.katex-display]:overflow-x-auto
+      ">
+        <ReactMarkdown
+          remarkPlugins={[remarkMath, remarkGfm]}
+          rehypePlugins={[rehypeKatex]}
+          components={{
+            code({ className, children }) {
+              const lang = /language-(\w+)/.exec(className || '')?.[1]
+              const content = String(children).replace(/\n$/, '')
+              if (className?.startsWith('language-')) {
+                return <CodeBlock content={content} lang={lang} />
+              }
+              return <code className={className}>{children}</code>
+            },
+            pre({ children }) {
+              return <>{children}</>
+            },
+          }}
+        >
+          {block.content}
+        </ReactMarkdown>
       </div>
     )
   }
@@ -114,23 +103,28 @@ function Section({ node, depth, id, getVis, nodeId }: {
   getVis: (nodeId: string, file: string) => string | null; nodeId: string
 }) {
   return (
-    <div id={id} className={cn(depth === 0 ? 'pt-2' : 'pt-10')}>
+    <div id={id} className={cn(depth === 0 ? 'pt-2' : depth === 1 ? 'pt-10' : 'pt-7')}>
       {depth === 0 && (
-        <div className="mb-7 pb-5 border-b border-border/50">
-          <h2 className="text-[19px] font-semibold tracking-tight text-foreground leading-snug">
+        <div className="mb-8 pb-5 border-b border-border/50">
+          <h2 className="text-[24px] font-bold tracking-tight text-foreground leading-snug">
             {node.title}
           </h2>
         </div>
       )}
       {depth === 1 && (
-        <h3 className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground mb-4">
+        <h3 className="text-[17px] font-semibold text-foreground mb-4">
           {node.title}
         </h3>
       )}
-      {depth >= 2 && (
-        <h4 className="text-[13px] font-medium text-foreground/80 mb-2">
+      {depth === 2 && (
+        <h4 className="text-[14px] font-medium text-foreground/80 mb-3">
           {node.title}
         </h4>
+      )}
+      {depth >= 3 && (
+        <h5 className="text-[13px] font-medium text-muted-foreground mb-2">
+          {node.title}
+        </h5>
       )}
       {node.blocks.length > 0 && (
         <div className="flex flex-col gap-4">
@@ -179,8 +173,11 @@ function SidebarItem({ node, depth, id, activeId, onSelect }: {
           <span className="w-3 shrink-0" />
         )}
         <span className={cn(
-          'text-[12px] leading-snug',
-          depth === 0 ? 'font-medium' : 'font-normal opacity-85',
+          'leading-snug',
+          depth === 0 && 'text-[13px] font-semibold text-foreground',
+          depth === 1 && 'text-[12px] font-medium text-foreground/75',
+          depth === 2 && 'text-[11px] font-normal text-muted-foreground',
+          depth >= 3 && 'text-[11px] font-normal text-muted-foreground/60',
         )}>
           {node.title}
         </span>
