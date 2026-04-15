@@ -6,17 +6,60 @@ import { ChevronRight, ChevronDown, ArrowLeft } from 'lucide-react'
 import katex from 'katex'
 import 'katex/dist/katex.min.css'
 
-function renderMathContent(text: string): string {
-  const segments = text.split(/(\$\$[\s\S]+?\$\$|\$[^$\n]+?\$)/g)
+// ── Text rendering: math + inline code ───────────────────────────────────────
+
+function renderTextContent(text: string): string {
+  const segments = text.split(/(\$\$[\s\S]+?\$\$|\$[^$\n]+?\$|`[^`\n]+`)/g)
   return segments.map(seg => {
-    if (seg.startsWith('$$') && seg.endsWith('$$')) {
+    if (seg.startsWith('$$') && seg.endsWith('$$'))
       return katex.renderToString(seg.slice(2, -2), { displayMode: true, throwOnError: false })
-    }
-    if (seg.startsWith('$') && seg.endsWith('$')) {
+    if (seg.startsWith('$') && seg.endsWith('$'))
       return katex.renderToString(seg.slice(1, -1), { displayMode: false, throwOnError: false })
+    if (seg.startsWith('`') && seg.endsWith('`')) {
+      const code = seg.slice(1, -1).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      return `<code class="inline-code">${code}</code>`
     }
     return seg.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
   }).join('')
+}
+
+// ── Fenced code block parser ──────────────────────────────────────────────────
+
+interface Segment { type: 'text' | 'code'; content: string; lang?: string }
+
+function parseSegments(text: string): Segment[] {
+  const out: Segment[] = []
+  const re = /```(\w*)\n?([\s\S]*?)```/g
+  let last = 0
+  let m: RegExpExecArray | null
+  while ((m = re.exec(text)) !== null) {
+    const before = text.slice(last, m.index).trim()
+    if (before) out.push({ type: 'text', content: before })
+    out.push({ type: 'code', content: m[2].trimEnd(), lang: m[1] || undefined })
+    last = m.index + m[0].length
+  }
+  const rest = text.slice(last).trim()
+  if (rest) out.push({ type: 'text', content: rest })
+  return out
+}
+
+// ── Components ────────────────────────────────────────────────────────────────
+
+function CodeBlock({ content, lang }: { content: string; lang?: string }) {
+  return (
+    <div className="relative my-1 rounded-lg overflow-hidden border border-border/50">
+      {lang && (
+        <div className="flex items-center justify-between px-4 py-2 bg-[#161b22] border-b border-border/50">
+          <span className="text-[11px] text-muted-foreground/60 font-mono">{lang}</span>
+        </div>
+      )}
+      <pre className="bg-[#0d1117] px-5 py-4 overflow-x-auto m-0">
+        <code className="text-[13px] leading-[1.75] text-[#e6edf3] font-mono whitespace-pre">
+          {content}
+        </code>
+      </pre>
+    </div>
+  )
 }
 
 function VisBlock({ html, caption, height = 280 }: { html: string; caption?: string; height?: number }) {
@@ -41,18 +84,21 @@ function ContentBlock({ block, getVis, nodeId }: {
   nodeId: string
 }) {
   if (block.type === 'text') {
-    if (block.content.includes('$')) {
-      return (
-        <div
-          className="text-[15px] leading-[1.85] text-foreground/72 whitespace-pre-line [&_.katex-display]:my-4 [&_.katex-display]:overflow-x-auto"
-          dangerouslySetInnerHTML={{ __html: renderMathContent(block.content) }}
-        />
-      )
-    }
+    const segments = parseSegments(block.content)
     return (
-      <p className="text-[15px] leading-[1.85] text-foreground/72 whitespace-pre-line">
-        {block.content}
-      </p>
+      <div className="flex flex-col gap-3">
+        {segments.map((seg, i) =>
+          seg.type === 'code'
+            ? <CodeBlock key={i} content={seg.content} lang={seg.lang} />
+            : (
+              <div
+                key={i}
+                className="text-[15px] leading-[1.85] text-foreground/72 whitespace-pre-line [&_.katex-display]:my-4 [&_.katex-display]:overflow-x-auto [&_.inline-code]:bg-[#161b22] [&_.inline-code]:text-[#e6edf3] [&_.inline-code]:px-1.5 [&_.inline-code]:py-0.5 [&_.inline-code]:rounded [&_.inline-code]:text-[13px] [&_.inline-code]:font-mono [&_.inline-code]:border [&_.inline-code]:border-border/40"
+                dangerouslySetInnerHTML={{ __html: renderTextContent(seg.content) }}
+              />
+            )
+        )}
+      </div>
     )
   }
   if (block.type === 'vis') {
@@ -241,7 +287,7 @@ export function LessonView({ roadmapNode, lessonNodes, getVis, onBack }: LessonV
 
         {/* Content */}
         <div ref={contentRef} className="flex-1 overflow-y-auto">
-          <div className="max-w-[660px] mx-auto px-12 py-10">
+          <div className="px-10 py-10">
             <div className="flex flex-col gap-10">
               {lessonNodes.map((node, i) => (
                 <Section key={i} node={node} depth={0} id={`s${i}`} getVis={getVis} nodeId={roadmapNode.id} />
