@@ -112,12 +112,12 @@ function Section({ node, depth, id, getVis, nodeId }: {
         </div>
       )}
       {depth === 1 && (
-        <h3 className="text-[17px] font-semibold text-foreground mb-4">
+        <h3 className="text-[17px] font-semibold text-primary mb-4">
           {node.title}
         </h3>
       )}
       {depth === 2 && (
-        <h4 className="text-[14px] font-medium text-foreground/80 mb-3">
+        <h4 className="text-[14px] font-medium text-sky-400 mb-3">
           {node.title}
         </h4>
       )}
