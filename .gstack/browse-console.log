@@ -1,0 +1,36 @@
+[2026-04-14T12:53:44.883Z] [debug] [vite] connecting...
+[2026-04-14T12:53:44.950Z] [debug] [vite] connected.
+[2026-04-14T12:53:45.051Z] [info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[2026-04-14T12:53:59.619Z] [debug] [vite] connecting...
+[2026-04-14T12:53:59.620Z] [debug] [vite] connected.
+[2026-04-14T12:53:59.640Z] [info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[2026-04-14T12:54:12.273Z] [debug] [vite] connecting...
+[2026-04-14T12:54:12.273Z] [debug] [vite] connected.
+[2026-04-14T12:54:12.292Z] [info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[2026-04-14T12:54:29.749Z] [log] [vite] server connection lost. Polling for restart...
+[2026-04-14T12:58:49.006Z] [debug] [vite] connecting...
+[2026-04-14T12:58:49.216Z] [info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[2026-04-14T12:58:50.897Z] [debug] [vite] connected.
+[2026-04-14T12:58:55.247Z] [debug] [vite] connecting...
+[2026-04-14T12:58:55.267Z] [info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[2026-04-14T12:58:55.383Z] [debug] [vite] connecting...
+[2026-04-14T12:58:55.402Z] [info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[2026-04-14T12:58:59.454Z] [debug] [vite] connected.
+[2026-04-14T12:59:35.603Z] [debug] [vite] hot updated: /src/index.css
+[2026-04-14T12:59:35.603Z] [debug] [vite] hot updated: /src/components/RoadmapView.tsx
+[2026-04-14T12:59:45.974Z] [debug] [vite] hot updated: /src/index.css
+[2026-04-14T12:59:54.976Z] [debug] [vite] hot updated: /src/components/RoadmapView.tsx
+[2026-04-14T12:59:54.976Z] [debug] [vite] hot updated: /src/index.css
+[2026-04-14T13:00:07.025Z] [debug] [vite] hot updated: /src/components/RoadmapView.tsx
+[2026-04-14T13:00:07.025Z] [debug] [vite] hot updated: /src/index.css
+[2026-04-14T13:00:14.067Z] [debug] [vite] hot updated: /src/components/RoadmapView.tsx
+[2026-04-14T13:00:14.067Z] [debug] [vite] hot updated: /src/index.css
+[2026-04-14T13:00:19.980Z] [debug] [vite] hot updated: /src/components/LessonView.tsx
+[2026-04-14T13:00:19.981Z] [debug] [vite] hot updated: /src/index.css
+[2026-04-14T13:01:16.488Z] [debug] [vite] connecting...
+[2026-04-14T13:01:16.504Z] [debug] [vite] connected.
+[2026-04-14T13:01:16.507Z] [info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[2026-04-14T13:01:16.619Z] [debug] [vite] connecting...
+[2026-04-14T13:01:16.636Z] [debug] [vite] connected.
+[2026-04-14T13:01:16.638Z] [info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[2026-04-14T13:01:52.140Z] [log] [vite] server connection lost. Polling for restart...

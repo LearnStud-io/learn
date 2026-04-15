@@ -14,7 +14,7 @@ const LABEL_LINE_H = 16
 const LABEL_MAX_CHARS = 26
 const DESC_LINE_H = 13
 const DESC_MAX_CHARS = 30
-const NODE_BASE_H = 62  // fits label (1 line) + 1 desc line
+const NODE_BASE_H = 62
 
 function wrapText(text: string, maxChars: number): string[] {
   if (!text) return []
@@ -65,16 +65,9 @@ function RoadmapEdges({ layoutNodes, edges }: { layoutNodes: LayoutNode[]; edges
   return (
     <>
       <defs>
-        <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-          <path d="M0,0 L0,6 L8,3 z" fill={colors.arrow} opacity={0.8} />
+        <marker id="arrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+          <path d="M0,0.5 L0,5.5 L5.5,3 z" fill={colors.arrow} />
         </marker>
-        <filter id="glow">
-          <feGaussianBlur stdDeviation="3" result="coloredBlur" />
-          <feMerge>
-            <feMergeNode in="coloredBlur" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
       </defs>
       {edges.map(edge => {
         const f = posMap[edge.from]
@@ -89,7 +82,6 @@ function RoadmapEdges({ layoutNodes, edges }: { layoutNodes: LayoutNode[]; edges
             x1={f.x + ux * (f.h / 2)} y1={f.y + uy * (f.h / 2)}
             x2={t.x - ux * (t.h / 2 + 6)} y2={t.y - uy * (t.h / 2 + 6)}
             stroke={colors.edge} strokeWidth={1.5} markerEnd="url(#arrow)"
-            opacity={0.7}
           />
         )
       })}
@@ -117,30 +109,37 @@ function RoadmapNodeCard({ node, onClick }: { node: LayoutNode; onClick: () => v
       onMouseLeave={() => setHovered(false)}
     >
       <defs>
-        <clipPath id={clipId}><rect width={NODE_W} height={node.h} rx={10} /></clipPath>
+        <clipPath id={clipId}><rect width={NODE_W} height={node.h} rx={8} /></clipPath>
         <filter id={filterId} x="-20%" y="-20%" width="140%" height="140%">
-          <feDropShadow dx="0" dy="0" stdDeviation={hovered ? '6' : '2'}
-            floodColor={hovered ? colors.accent : '#000'} floodOpacity={hovered ? '0.3' : '0.4'} />
+          <feDropShadow dx="0" dy="2" stdDeviation={hovered ? '8' : '3'}
+            floodColor={hovered ? colors.accent : '#000'}
+            floodOpacity={hovered ? '0.25' : '0.5'} />
         </filter>
       </defs>
+
       <rect
-        width={NODE_W} height={node.h} rx={10}
+        width={NODE_W} height={node.h} rx={8}
         fill={bgColor}
-        stroke={borderColor} strokeWidth={hovered ? 1.5 : 1}
+        stroke={borderColor} strokeWidth={1}
         filter={`url(#${filterId})`}
-        style={{ transition: 'all 0.15s ease' }}
       />
+
       <g clipPath={`url(#${clipId})`}>
+        {/* Top accent bar — only visible on hover */}
         {hovered && (
-          <rect width={NODE_W} height={2} rx={0} fill={colors.accent} opacity={0.8} />
+          <rect width={NODE_W} height={2} fill={colors.accent} opacity={0.9} />
         )}
+
+        {/* Label */}
         <text x={NODE_W / 2} y={28} textAnchor="middle"
           fill={hovered ? colors.accentHover : colors.textPrimary}
-          fontSize={13} fontWeight={600} fontFamily={font}>
+          fontSize={13} fontWeight={500} fontFamily={font}>
           {labelLines.map((line, i) => (
             <tspan key={i} x={NODE_W / 2} dy={i === 0 ? 0 : LABEL_LINE_H}>{line}</tspan>
           ))}
         </text>
+
+        {/* Description */}
         <text x={NODE_W / 2} y={descY} textAnchor="middle"
           fill={colors.textSecondary} fontSize={10} fontFamily={font}>
           {descLines.map((line, i) => (
@@ -273,12 +272,21 @@ export function RoadmapView({ nodes, onNodeClick, header, storageKey }: RoadmapV
         onMouseDown={onMouseDown} onMouseMove={onMouseMove} onMouseUp={onMouseUp} onMouseLeave={onMouseUp}
         onWheel={onWheel} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}
       >
+        <defs>
+          <pattern id="dot-grid" width="28" height="28" patternUnits="userSpaceOnUse">
+            <circle cx="14" cy="14" r="0.85" fill="#1e1e22" />
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#dot-grid)" />
+
         <g transform={`translate(${panX}, ${panY}) scale(${zoom})`}>
           <text x={startLabelX} y={-10} textAnchor="middle"
-            fill={colors.start} fontSize={9} fontWeight={700} fontFamily={font} letterSpacing={2.5}>
+            fill={colors.start} fontSize={8} fontWeight={600} fontFamily={font} letterSpacing={2.5}>
             START
           </text>
+
           <RoadmapEdges layoutNodes={layoutNodes} edges={edges} />
+
           {layoutNodes.map(node => (
             <RoadmapNodeCard key={node.id} node={node} onClick={() => onNodeClick(node.id)} />
           ))}

@@ -1,24 +1,22 @@
 export const colors = {
   bg: '#111113',
-  surface: '#1a1a1d',
+  surface: '#1b1b1e',
   surfaceHover: '#222226',
-  border: '#2a2a2e',
-  borderHover: '#3f3f46',
+  border: '#2c2c30',
+  borderHover: '#3d3d44',
   borderActive: '#6366f1',
 
-  textPrimary: '#e0e0e3',
-  textSecondary: '#8b8b96',
-  textMuted: '#4a4a52',
+  textPrimary: '#dfdfe2',
+  textSecondary: '#86868f',
+  textMuted: '#48484f',
 
   accent: '#6366f1',
   accentHover: '#818cf8',
-  accentGlow: '#4f46e5',
 
-  start: '#34d399',
-  startDim: '#064e3b',
+  start: '#86868f',
 
-  edge: '#2a2a2e',
-  arrow: '#6366f1',
+  edge: '#2f2f35',
+  arrow: '#4c4c55',
 }
 
-export const font = 'system-ui, -apple-system, sans-serif'
+export const font = "'Inter', system-ui, -apple-system, sans-serif"

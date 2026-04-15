@@ -6,8 +6,6 @@ import { ChevronRight, ChevronDown, ArrowLeft } from 'lucide-react'
 import katex from 'katex'
 import 'katex/dist/katex.min.css'
 
-// Render text that may contain $...$ (inline) or $$...$$ (display) LaTeX.
-// Splits on delimiters, HTML-escapes plain segments, renders math with KaTeX.
 function renderMathContent(text: string): string {
   const segments = text.split(/(\$\$[\s\S]+?\$\$|\$[^$\n]+?\$)/g)
   return segments.map(seg => {
@@ -23,15 +21,15 @@ function renderMathContent(text: string): string {
 
 function VisBlock({ html, caption, height = 280 }: { html: string; caption?: string; height?: number }) {
   return (
-    <div className="flex flex-col gap-2 my-2">
+    <div className="flex flex-col gap-2 my-1">
       <iframe
         srcDoc={html}
-        className="w-full rounded-lg border border-border bg-background"
+        className="w-full rounded-lg border border-border/70 bg-background overflow-hidden"
         style={{ height }}
         sandbox="allow-scripts"
       />
       {caption && (
-        <p className="text-xs text-muted-foreground text-center">{caption}</p>
+        <p className="text-xs text-muted-foreground/70 text-center italic px-4">{caption}</p>
       )}
     </div>
   )
@@ -46,13 +44,13 @@ function ContentBlock({ block, getVis, nodeId }: {
     if (block.content.includes('$')) {
       return (
         <div
-          className="text-[15px] leading-[1.85] text-slate-300 whitespace-pre-line [&_.katex-display]:my-4 [&_.katex-display]:overflow-x-auto"
+          className="text-[15px] leading-[1.85] text-foreground/72 whitespace-pre-line [&_.katex-display]:my-4 [&_.katex-display]:overflow-x-auto"
           dangerouslySetInnerHTML={{ __html: renderMathContent(block.content) }}
         />
       )
     }
     return (
-      <p className="text-[15px] leading-[1.85] text-slate-300 whitespace-pre-line">
+      <p className="text-[15px] leading-[1.85] text-foreground/72 whitespace-pre-line">
         {block.content}
       </p>
     )
@@ -72,17 +70,19 @@ function Section({ node, depth, id, getVis, nodeId }: {
   return (
     <div id={id} className={cn(depth === 0 ? 'pt-2' : 'pt-10')}>
       {depth === 0 && (
-        <h2 className="text-2xl font-bold tracking-tight mb-6 border-b border-border pb-3 text-primary">
-          {node.title}
-        </h2>
+        <div className="mb-7 pb-5 border-b border-border/50">
+          <h2 className="text-[19px] font-semibold tracking-tight text-foreground leading-snug">
+            {node.title}
+          </h2>
+        </div>
       )}
       {depth === 1 && (
-        <h3 className="text-xs font-semibold uppercase tracking-widest text-primary mb-3">
+        <h3 className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground mb-4">
           {node.title}
         </h3>
       )}
       {depth >= 2 && (
-        <h4 className="text-sm font-semibold text-primary mb-2">
+        <h4 className="text-[13px] font-medium text-foreground/80 mb-2">
           {node.title}
         </h4>
       )}
@@ -112,17 +112,17 @@ function SidebarItem({ node, depth, id, activeId, onSelect }: {
       <div
         onClick={() => onSelect(id)}
         className={cn(
-          'flex items-center gap-1.5 py-1.5 pr-3 cursor-pointer rounded-r-md border-r-2 transition-colors',
+          'flex items-center gap-1.5 py-[7px] pr-3 cursor-pointer border-r-2 transition-colors duration-100',
           isActive
-            ? 'border-primary bg-primary/10 text-primary'
-            : 'border-transparent hover:bg-white/5 text-muted-foreground hover:text-foreground',
+            ? 'border-primary bg-primary/[0.07] text-foreground/90'
+            : 'border-transparent hover:bg-white/[0.035] text-muted-foreground hover:text-foreground/70',
         )}
         style={{ paddingLeft: `${12 + depth * 16}px` }}
       >
         {hasChildren ? (
           <span
             onClick={e => { e.stopPropagation(); setOpen(o => !o) }}
-            className="shrink-0 text-muted-foreground hover:text-foreground"
+            className="shrink-0 opacity-40 hover:opacity-70"
           >
             {open
               ? <ChevronDown className="w-3 h-3" />
@@ -133,10 +133,8 @@ function SidebarItem({ node, depth, id, activeId, onSelect }: {
           <span className="w-3 shrink-0" />
         )}
         <span className={cn(
-          'text-xs leading-snug',
-          depth === 0 && 'font-medium',
-          depth !== 0 && 'font-normal opacity-90',
-          isActive && 'text-primary',
+          'text-[12px] leading-snug',
+          depth === 0 ? 'font-medium' : 'font-normal opacity-85',
         )}>
           {node.title}
         </span>
@@ -218,18 +216,24 @@ export function LessonView({ roadmapNode, lessonNodes, getVis, onBack }: LessonV
   return (
     <div className="h-screen bg-background flex flex-col overflow-hidden">
       {/* Header */}
-      <div className="flex items-center gap-3 px-5 h-12 border-b border-border shrink-0 bg-card/50">
-        <Button variant="ghost" size="sm" onClick={onBack} className="text-muted-foreground hover:text-foreground -ml-1">
-          <ArrowLeft className="w-3.5 h-3.5 mr-1.5" />
+      <div className="flex items-center gap-3 px-5 h-11 border-b border-border shrink-0 bg-card/50">
+        <Button
+          variant="ghost" size="sm" onClick={onBack}
+          className="text-muted-foreground hover:text-foreground -ml-1 gap-1.5 h-7 px-2 text-xs"
+        >
+          <ArrowLeft className="w-3 h-3" />
           Back
         </Button>
-        <div className="w-px h-4 bg-border" />
-        <h1 className="text-sm font-semibold text-foreground">{roadmapNode.label}</h1>
+        <div className="w-px h-3.5 bg-border" />
+        <h1 className="text-[13px] font-medium text-foreground/80 truncate">{roadmapNode.label}</h1>
       </div>
 
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
-        <div className="w-56 border-r border-border overflow-y-auto py-3 shrink-0 bg-card">
+        <div className="w-56 border-r border-border overflow-y-auto py-5 shrink-0">
+          <p className="px-4 mb-3 text-[9px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/50">
+            Contents
+          </p>
           {lessonNodes.map((node, i) => (
             <SidebarItem key={i} node={node} depth={0} id={`s${i}`} activeId={activeId} onSelect={handleSelect} />
           ))}
@@ -237,7 +241,7 @@ export function LessonView({ roadmapNode, lessonNodes, getVis, onBack }: LessonV
 
         {/* Content */}
         <div ref={contentRef} className="flex-1 overflow-y-auto">
-          <div className="px-14 py-10">
+          <div className="max-w-[660px] mx-auto px-12 py-10">
             <div className="flex flex-col gap-10">
               {lessonNodes.map((node, i) => (
                 <Section key={i} node={node} depth={0} id={`s${i}`} getVis={getVis} nodeId={roadmapNode.id} />
