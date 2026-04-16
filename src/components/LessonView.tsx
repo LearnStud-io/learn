@@ -4,12 +4,30 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { ChevronRight, ChevronDown, ArrowLeft, CheckCircle2, Circle, List, X } from 'lucide-react'
 import 'katex/dist/katex.min.css'
+import katex from 'katex'
 import ReactMarkdown from 'react-markdown'
 import remarkMath from 'remark-math'
 import remarkGfm from 'remark-gfm'
 import rehypeKatex from 'rehype-katex'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism'
+
+// ── Inline math in titles ─────────────────────────────────────────────────────
+
+function renderInlineMath(text: string): string {
+  return text.replace(/\$([^$\n]+)\$/g, (_, math) => {
+    try {
+      return katex.renderToString(math, { throwOnError: false, displayMode: false })
+    } catch {
+      return `$${math}$`
+    }
+  })
+}
+
+function InlineTitle({ text }: { text: string }) {
+  if (!text.includes('$')) return <>{text}</>
+  return <span dangerouslySetInnerHTML={{ __html: renderInlineMath(text) }} />
+}
 
 // ── Code block ────────────────────────────────────────────────────────────────
 
@@ -107,23 +125,23 @@ function Section({ node, depth, id, getVis, nodeId }: {
       {depth === 0 && (
         <div className="mb-8 pb-5 border-b border-border/50">
           <h2 className="text-[24px] font-bold tracking-tight text-foreground leading-snug">
-            {node.title}
+            <InlineTitle text={node.title} />
           </h2>
         </div>
       )}
       {depth === 1 && (
         <h3 className="text-[17px] font-semibold text-primary mb-4">
-          {node.title}
+          <InlineTitle text={node.title} />
         </h3>
       )}
       {depth === 2 && (
         <h4 className="text-[14px] font-medium text-sky-400 mb-3">
-          {node.title}
+          <InlineTitle text={node.title} />
         </h4>
       )}
       {depth >= 3 && (
         <h5 className="text-[13px] font-medium text-muted-foreground mb-2">
-          {node.title}
+          <InlineTitle text={node.title} />
         </h5>
       )}
       {node.blocks.length > 0 && (
