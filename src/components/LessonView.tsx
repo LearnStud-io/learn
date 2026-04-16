@@ -197,7 +197,7 @@ function SidebarItem({ node, depth, id, activeId, onSelect }: {
           depth === 2 && 'text-[11px] font-normal text-muted-foreground',
           depth >= 3 && 'text-[11px] font-normal text-muted-foreground/60',
         )}>
-          {node.title}
+          <InlineTitle text={node.title} />
         </span>
       </div>
       {hasChildren && open && (node.children ?? []).map((child, i) => (
