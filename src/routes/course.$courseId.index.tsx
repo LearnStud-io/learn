@@ -1,8 +1,10 @@
+import { useState } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { RoadmapView } from '~/components/RoadmapView'
 import { Route as CourseRoute } from './course.$courseId'
 import { colors, font } from '~/modules/theme'
 import { useCompletedNodes } from '~/modules/useCompletedNodes'
+import { Info, X } from 'lucide-react'
 
 export const Route = createFileRoute('/course/$courseId/')({
   component: function CourseRoadmap() {
@@ -10,12 +12,13 @@ export const Route = createFileRoute('/course/$courseId/')({
     const { courseId } = Route.useParams()
     const navigate = useNavigate()
     const { completed, toggle } = useCompletedNodes(courseId)
+    const [sidebarOpen, setSidebarOpen] = useState(false)
 
     const hasOverview = data.course.overview || data.course.goal
 
     return (
       <div style={{ display: 'flex', height: '100vh', overflow: 'hidden', background: colors.bg }}>
-        {/* ── Left sidebar: goal + overview ─────────────────────────────── */}
+        {/* ── Left sidebar: goal + overview (desktop) ───────────────────── */}
         {hasOverview && (
           <div className="hidden md:flex" style={{
             width: 380,
@@ -35,29 +38,14 @@ export const Route = createFileRoute('/course/$courseId/')({
                 </p>
               )}
             </div>
-
             <div style={{ flex: 1, overflowY: 'auto', padding: '20px' }}>
               {data.course.goal && (
-                <p style={{
-                  fontFamily: font,
-                  fontSize: 12,
-                  fontWeight: 500,
-                  color: colors.textPrimary,
-                  lineHeight: 1.6,
-                  margin: '0 0 12px',
-                }}>
+                <p style={{ fontFamily: font, fontSize: 12, fontWeight: 500, color: colors.textPrimary, lineHeight: 1.6, margin: '0 0 12px' }}>
                   {data.course.goal}
                 </p>
               )}
-
               {data.course.overview && (
-                <p style={{
-                  fontFamily: font,
-                  fontSize: 11,
-                  color: colors.textSecondary,
-                  lineHeight: 1.7,
-                  margin: 0,
-                }}>
+                <p style={{ fontFamily: font, fontSize: 11, color: colors.textSecondary, lineHeight: 1.7, margin: 0 }}>
                   {data.course.overview}
                 </p>
               )}
@@ -65,7 +53,40 @@ export const Route = createFileRoute('/course/$courseId/')({
           </div>
         )}
 
-        {/* ── Right: roadmap canvas ─────────────────────────────────────── */}
+        {/* ── Mobile sidebar overlay ─────────────────────────────────────── */}
+        {hasOverview && sidebarOpen && (
+          <div className="md:hidden fixed inset-0 z-20 overflow-y-auto" style={{ background: colors.surface }}>
+            <div style={{ padding: '16px 20px', borderBottom: `1px solid ${colors.border}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div>
+                <h1 style={{ fontFamily: font, fontSize: 13, fontWeight: 600, color: colors.textPrimary, margin: 0 }}>
+                  {data.course.title}
+                </h1>
+                {data.course.subtitle && (
+                  <p style={{ fontFamily: font, fontSize: 11, color: colors.textSecondary, margin: '4px 0 0' }}>
+                    {data.course.subtitle}
+                  </p>
+                )}
+              </div>
+              <button onClick={() => setSidebarOpen(false)} style={{ color: colors.textSecondary, padding: 4, lineHeight: 0 }}>
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <div style={{ padding: '20px' }}>
+              {data.course.goal && (
+                <p style={{ fontFamily: font, fontSize: 13, fontWeight: 500, color: colors.textPrimary, lineHeight: 1.6, margin: '0 0 16px' }}>
+                  {data.course.goal}
+                </p>
+              )}
+              {data.course.overview && (
+                <p style={{ fontFamily: font, fontSize: 12, color: colors.textSecondary, lineHeight: 1.7, margin: 0 }}>
+                  {data.course.overview}
+                </p>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ── Roadmap canvas ────────────────────────────────────────────── */}
         <RoadmapView
           nodes={data.nodes}
           onNodeClick={(nodeId) => navigate({ to: '/course/$courseId/lesson/$nodeId', params: { courseId, nodeId } })}
@@ -89,6 +110,20 @@ export const Route = createFileRoute('/course/$courseId/')({
             ),
           })}
         />
+
+        {/* ── Mobile info toggle ──────────────────────────────────────────── */}
+        {hasOverview && (
+          <button
+            className="md:hidden fixed bottom-5 right-5 z-10 w-10 h-10 rounded-full flex items-center justify-center shadow-lg"
+            style={{ background: colors.surface, border: `1px solid ${colors.border}` }}
+            onClick={() => setSidebarOpen(o => !o)}
+          >
+            {sidebarOpen
+              ? <X className="w-4 h-4" style={{ color: colors.textSecondary }} />
+              : <Info className="w-4 h-4" style={{ color: colors.textSecondary }} />
+            }
+          </button>
+        )}
       </div>
     )
   },
