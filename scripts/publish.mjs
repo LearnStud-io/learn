@@ -112,6 +112,8 @@ function loadCourse() {
     title: metadata.title,
     subtitle: metadata.subtitle,
     version: metadata.version,
+    overview: metadata.overview,
+    goal: metadata.goal,
     nodes: roadmap.nodes,
     sections,
     blocks,
