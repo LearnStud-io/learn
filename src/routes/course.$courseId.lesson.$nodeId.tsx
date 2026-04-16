@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate, notFound } from '@tanstack/react-router'
 import { LessonView } from '~/components/LessonView'
 import type { LessonNode } from '~/modules/data'
 import { Route as CourseRoute } from './course.$courseId'
+import { useCompletedNodes } from '~/modules/useCompletedNodes'
 
 const API_URL = import.meta.env.VITE_API_URL ?? 'https://create.learnstud.io'
 
@@ -22,6 +23,8 @@ export const Route = createFileRoute('/course/$courseId/lesson/$nodeId')({
     const { courseId, nodeId } = Route.useParams()
     const navigate = useNavigate()
 
+    const { completed, toggle } = useCompletedNodes(courseId)
+
     const roadmapNode = courseData.nodes.find(n => n.id === nodeId)
     if (!roadmapNode) return (
       <div className="h-screen bg-background flex items-center justify-center">
@@ -37,6 +40,8 @@ export const Route = createFileRoute('/course/$courseId/lesson/$nodeId')({
         lessonNodes={lessonNodes}
         getVis={(_nId, file) => visMap[file] ?? null}
         onBack={() => navigate({ to: '/course/$courseId', params: { courseId } })}
+        completed={completed.has(nodeId)}
+        onToggleComplete={() => toggle(nodeId)}
       />
     )
   },

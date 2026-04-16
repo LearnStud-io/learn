@@ -2,12 +2,14 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { RoadmapView } from '~/components/RoadmapView'
 import { Route as CourseRoute } from './course.$courseId'
 import { colors, font } from '~/modules/theme'
+import { useCompletedNodes } from '~/modules/useCompletedNodes'
 
 export const Route = createFileRoute('/course/$courseId/')({
   component: function CourseRoadmap() {
     const data = CourseRoute.useLoaderData()
     const { courseId } = Route.useParams()
     const navigate = useNavigate()
+    const { completed, toggle } = useCompletedNodes(courseId)
 
     const hasOverview = data.course.overview || data.course.goal
 
@@ -68,6 +70,8 @@ export const Route = createFileRoute('/course/$courseId/')({
         <RoadmapView
           nodes={data.nodes}
           onNodeClick={(nodeId) => navigate({ to: '/course/$courseId/lesson/$nodeId', params: { courseId, nodeId } })}
+          completedIds={completed}
+          onToggleComplete={toggle}
           storageKey={`roadmap-transform:${courseId}`}
           containerStyle={{ flex: 1, height: '100vh' }}
           {...(!hasOverview && {

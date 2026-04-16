@@ -2,10 +2,12 @@ import { useNavigate } from '@tanstack/react-router'
 import { RoadmapView } from '~/components/RoadmapView'
 import { loadRoadmap, metadata } from '../data'
 import { colors, font } from '../theme'
+import { useCompletedNodes } from '../useCompletedNodes'
 
 export function RoadmapPage() {
   const navigate = useNavigate()
   const { nodes } = loadRoadmap()
+  const { completed, toggle } = useCompletedNodes('local')
 
   const hasOverview = metadata.overview || metadata.goal
 
@@ -66,6 +68,8 @@ export function RoadmapPage() {
       <RoadmapView
         nodes={nodes}
         onNodeClick={(nodeId) => navigate({ to: '/lesson/$nodeId', params: { nodeId } })}
+        completedIds={completed}
+        onToggleComplete={toggle}
         containerStyle={{ flex: 1, height: '100vh' }}
       />
     </div>

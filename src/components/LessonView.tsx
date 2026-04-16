@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import type { RoadmapNode, LessonNode, Block } from '../modules/data'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { ChevronRight, ChevronDown, ArrowLeft } from 'lucide-react'
+import { ChevronRight, ChevronDown, ArrowLeft, CheckCircle2, Circle } from 'lucide-react'
 import 'katex/dist/katex.min.css'
 import ReactMarkdown from 'react-markdown'
 import remarkMath from 'remark-math'
@@ -194,6 +194,8 @@ export interface LessonViewProps {
   lessonNodes: LessonNode[]
   getVis: (nodeId: string, file: string) => string | null
   onBack: () => void
+  completed?: boolean
+  onToggleComplete?: () => void
 }
 
 function flattenIds(nodes: LessonNode[], prefix = 's'): string[] {
@@ -203,7 +205,7 @@ function flattenIds(nodes: LessonNode[], prefix = 's'): string[] {
   })
 }
 
-export function LessonView({ roadmapNode, lessonNodes, getVis, onBack }: LessonViewProps) {
+export function LessonView({ roadmapNode, lessonNodes, getVis, onBack, completed = false, onToggleComplete }: LessonViewProps) {
   const contentRef = useRef<HTMLDivElement>(null)
   const [activeId, setActiveId] = useState('s0')
   const isScrollingToRef = useRef(false)
@@ -269,6 +271,23 @@ export function LessonView({ roadmapNode, lessonNodes, getVis, onBack }: LessonV
         </Button>
         <div className="w-px h-3.5 bg-border" />
         <h1 className="text-[13px] font-medium text-foreground/80 truncate">{roadmapNode.label}</h1>
+        {onToggleComplete && (
+          <Button
+            variant="ghost" size="sm"
+            onClick={onToggleComplete}
+            className={cn(
+              'ml-auto gap-1.5 h-7 px-2.5 text-xs shrink-0 transition-colors',
+              completed
+                ? 'text-green-400 hover:text-green-300 hover:bg-green-400/10'
+                : 'text-muted-foreground hover:text-foreground',
+            )}
+          >
+            {completed
+              ? <><CheckCircle2 className="w-3.5 h-3.5" /> Completed</>
+              : <><Circle className="w-3.5 h-3.5" /> Mark complete</>
+            }
+          </Button>
+        )}
       </div>
 
       <div className="flex flex-1 overflow-hidden">

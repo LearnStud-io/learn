@@ -89,11 +89,21 @@ function RoadmapEdges({ layoutNodes, edges }: { layoutNodes: LayoutNode[]; edges
   )
 }
 
-function RoadmapNodeCard({ node, onClick }: { node: LayoutNode; onClick: () => void }) {
+const GREEN = '#22c55e'
+const GREEN_DIM = '#166534'
+
+function RoadmapNodeCard({
+  node, onClick, completed, onToggleComplete,
+}: {
+  node: LayoutNode
+  onClick: () => void
+  completed: boolean
+  onToggleComplete: (nodeId: string) => void
+}) {
   const [hovered, setHovered] = useState(false)
   const clipId = `clip-${node.id}`
   const filterId = `shadow-${node.id}`
-  const borderColor = hovered ? colors.borderActive : colors.border
+  const borderColor = completed ? GREEN_DIM : hovered ? colors.borderActive : colors.border
   const bgColor = hovered ? colors.surfaceHover : colors.surface
   const labelLines = wrapText(node.label, LABEL_MAX_CHARS)
   const descLines = wrapText(node.description, DESC_MAX_CHARS)
@@ -112,7 +122,7 @@ function RoadmapNodeCard({ node, onClick }: { node: LayoutNode; onClick: () => v
         <clipPath id={clipId}><rect width={NODE_W} height={node.h} rx={8} /></clipPath>
         <filter id={filterId} x="-20%" y="-20%" width="140%" height="140%">
           <feDropShadow dx="0" dy="2" stdDeviation={hovered ? '8' : '3'}
-            floodColor={hovered ? colors.accent : '#000'}
+            floodColor={completed ? GREEN : hovered ? colors.accent : '#000'}
             floodOpacity={hovered ? '0.25' : '0.5'} />
         </filter>
       </defs>
@@ -125,9 +135,9 @@ function RoadmapNodeCard({ node, onClick }: { node: LayoutNode; onClick: () => v
       />
 
       <g clipPath={`url(#${clipId})`}>
-        {/* Top accent bar — only visible on hover */}
-        {hovered && (
-          <rect width={NODE_W} height={2} fill={colors.accent} opacity={0.9} />
+        {/* Top accent bar — green when completed, blue on hover */}
+        {(completed || hovered) && (
+          <rect width={NODE_W} height={2} fill={completed ? GREEN : colors.accent} opacity={0.9} />
         )}
 
         {/* Label */}
@@ -147,6 +157,28 @@ function RoadmapNodeCard({ node, onClick }: { node: LayoutNode; onClick: () => v
           ))}
         </text>
       </g>
+
+      {/* Completion badge — top-right corner */}
+      <g
+        transform={`translate(${NODE_W - 13}, 13)`}
+        style={{ cursor: 'pointer' }}
+        onClick={e => { e.stopPropagation(); onToggleComplete(node.id) }}
+      >
+        <circle
+          r={8}
+          fill={completed ? GREEN : 'transparent'}
+          stroke={completed ? GREEN : hovered ? '#475569' : '#2d3748'}
+          strokeWidth={1.5}
+        />
+        {completed && (
+          <path
+            d="M-3.5,0 L-1,2.5 L3.5,-2.5"
+            stroke="white" strokeWidth={1.5}
+            strokeLinecap="round" strokeLinejoin="round"
+            fill="none"
+          />
+        )}
+      </g>
     </g>
   )
 }
@@ -154,12 +186,14 @@ function RoadmapNodeCard({ node, onClick }: { node: LayoutNode; onClick: () => v
 export interface RoadmapViewProps {
   nodes: RoadmapNode[]
   onNodeClick: (nodeId: string) => void
+  completedIds?: Set<string>
+  onToggleComplete?: (nodeId: string) => void
   header?: React.ReactNode
   storageKey?: string
   containerStyle?: React.CSSProperties
 }
 
-export function RoadmapView({ nodes, onNodeClick, header, storageKey, containerStyle }: RoadmapViewProps) {
+export function RoadmapView({ nodes, onNodeClick, completedIds, onToggleComplete, header, storageKey, containerStyle }: RoadmapViewProps) {
   const key = storageKey ?? STORAGE_KEY_PREFIX
   const edges = deriveEdges(nodes)
   const { layoutNodes, graphW, graphH } = computeLayout(nodes, edges)
@@ -289,7 +323,13 @@ export function RoadmapView({ nodes, onNodeClick, header, storageKey, containerS
           <RoadmapEdges layoutNodes={layoutNodes} edges={edges} />
 
           {layoutNodes.map(node => (
-            <RoadmapNodeCard key={node.id} node={node} onClick={() => onNodeClick(node.id)} />
+            <RoadmapNodeCard
+              key={node.id}
+              node={node}
+              onClick={() => onNodeClick(node.id)}
+              completed={completedIds?.has(node.id) ?? false}
+              onToggleComplete={onToggleComplete ?? (() => {})}
+            />
           ))}
         </g>
       </svg>
