@@ -1,8 +1,8 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import type { RoadmapNode, LessonNode, Block } from '../modules/data'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { ChevronRight, ChevronDown, ArrowLeft, CheckCircle2, Circle } from 'lucide-react'
+import { ChevronRight, ChevronDown, ArrowLeft, CheckCircle2, Circle, List, X } from 'lucide-react'
 import 'katex/dist/katex.min.css'
 import ReactMarkdown from 'react-markdown'
 import remarkMath from 'remark-math'
@@ -208,6 +208,7 @@ function flattenIds(nodes: LessonNode[], prefix = 's'): string[] {
 export function LessonView({ roadmapNode, lessonNodes, getVis, onBack, completed = false, onToggleComplete }: LessonViewProps) {
   const contentRef = useRef<HTMLDivElement>(null)
   const [activeId, setActiveId] = useState('s0')
+  const [sidebarOpen, setSidebarOpen] = useState(false)
   const isScrollingToRef = useRef(false)
 
   useEffect(() => { setActiveId('s0') }, [roadmapNode.id])
@@ -248,7 +249,11 @@ export function LessonView({ roadmapNode, lessonNodes, getVis, onBack, completed
     setTimeout(() => { isScrollingToRef.current = false }, 100)
   }
 
-  function handleSelect(id: string) { setActiveId(id); scrollTo(id) }
+  const handleSelect = useCallback((id: string) => {
+    setActiveId(id)
+    scrollTo(id)
+    setSidebarOpen(false)
+  }, [])
 
   if (lessonNodes.length === 0) {
     return (
@@ -261,38 +266,50 @@ export function LessonView({ roadmapNode, lessonNodes, getVis, onBack, completed
   return (
     <div className="h-screen bg-background flex flex-col overflow-hidden">
       {/* Header */}
-      <div className="flex items-center gap-3 px-5 h-11 border-b border-border shrink-0 bg-card/50">
+      <div className="flex items-center gap-2 sm:gap-3 px-3 sm:px-5 h-11 border-b border-border shrink-0 bg-card/50">
         <Button
           variant="ghost" size="sm" onClick={onBack}
-          className="text-muted-foreground hover:text-foreground -ml-1 gap-1.5 h-7 px-2 text-xs"
+          className="text-muted-foreground hover:text-foreground -ml-1 gap-1.5 h-7 px-2 text-xs shrink-0"
         >
           <ArrowLeft className="w-3 h-3" />
-          Back
+          <span className="hidden sm:inline">Back</span>
         </Button>
-        <div className="w-px h-3.5 bg-border" />
+        <div className="w-px h-3.5 bg-border shrink-0" />
         <h1 className="text-[13px] font-medium text-foreground/80 truncate">{roadmapNode.label}</h1>
-        {onToggleComplete && (
+        <div className="ml-auto flex items-center gap-1 shrink-0">
+          {onToggleComplete && (
+            <Button
+              variant="ghost" size="sm"
+              onClick={onToggleComplete}
+              className={cn(
+                'gap-1.5 h-7 px-2 sm:px-2.5 text-xs transition-colors',
+                completed
+                  ? 'text-green-400 hover:text-green-300 hover:bg-green-400/10'
+                  : 'text-muted-foreground hover:text-foreground',
+              )}
+            >
+              {completed
+                ? <><CheckCircle2 className="w-3.5 h-3.5" /><span className="hidden sm:inline">Completed</span></>
+                : <><Circle className="w-3.5 h-3.5" /><span className="hidden sm:inline">Mark complete</span></>
+              }
+            </Button>
+          )}
           <Button
             variant="ghost" size="sm"
-            onClick={onToggleComplete}
-            className={cn(
-              'ml-auto gap-1.5 h-7 px-2.5 text-xs shrink-0 transition-colors',
-              completed
-                ? 'text-green-400 hover:text-green-300 hover:bg-green-400/10'
-                : 'text-muted-foreground hover:text-foreground',
-            )}
+            onClick={() => setSidebarOpen(o => !o)}
+            className="md:hidden h-7 w-7 p-0 text-muted-foreground hover:text-foreground"
           >
-            {completed
-              ? <><CheckCircle2 className="w-3.5 h-3.5" /> Completed</>
-              : <><Circle className="w-3.5 h-3.5" /> Mark complete</>
-            }
+            {sidebarOpen ? <X className="w-3.5 h-3.5" /> : <List className="w-3.5 h-3.5" />}
           </Button>
-        )}
+        </div>
       </div>
 
       <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar */}
-        <div className="w-56 border-r border-border overflow-y-auto py-5 shrink-0">
+        {/* Sidebar — desktop: persistent, mobile: overlay */}
+        <div className={cn(
+          'border-r border-border overflow-y-auto py-5 shrink-0 bg-background',
+          'hidden md:block w-56',
+        )}>
           <p className="px-4 mb-3 text-[9px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/50">
             Contents
           </p>
@@ -301,9 +318,21 @@ export function LessonView({ roadmapNode, lessonNodes, getVis, onBack, completed
           ))}
         </div>
 
+        {/* Mobile sidebar overlay */}
+        {sidebarOpen && (
+          <div className="md:hidden fixed inset-0 z-20 bg-background overflow-y-auto py-5 border-b border-border" style={{ top: 44 }}>
+            <p className="px-4 mb-3 text-[9px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/50">
+              Contents
+            </p>
+            {lessonNodes.map((node, i) => (
+              <SidebarItem key={i} node={node} depth={0} id={`s${i}`} activeId={activeId} onSelect={handleSelect} />
+            ))}
+          </div>
+        )}
+
         {/* Content */}
         <div ref={contentRef} className="flex-1 overflow-y-auto">
-          <div className="px-10 py-10">
+          <div className="px-4 py-8 sm:px-10 sm:py-10">
             <div className="flex flex-col gap-10">
               {lessonNodes.map((node, i) => (
                 <Section key={i} node={node} depth={0} id={`s${i}`} getVis={getVis} nodeId={roadmapNode.id} />
