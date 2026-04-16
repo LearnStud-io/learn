@@ -17,12 +17,11 @@ export const Route = createFileRoute('/course/$courseId/')({
       <div style={{ display: 'flex', height: '100vh', overflow: 'hidden', background: colors.bg }}>
         {/* ── Left sidebar: goal + overview ─────────────────────────────── */}
         {hasOverview && (
-          <div style={{
+          <div className="hidden md:flex" style={{
             width: 380,
             flexShrink: 0,
             borderRight: `1px solid ${colors.border}`,
             background: colors.surface,
-            display: 'flex',
             flexDirection: 'column',
             overflow: 'hidden',
           }}>
