@@ -277,6 +277,10 @@ export function RoadmapView({ nodes, onNodeClick, completedIds, onToggleComplete
   const startLabelX = rootNodes.length ? rootNodes.reduce((sum, n) => sum + n.x + NODE_W / 2, 0) / rootNodes.length : graphW / 2
   const { x: panX, y: panY } = pan ?? { x: 0, y: 0 }
 
+  // START label in screen space — stays visible above root node even when panning
+  const startScreenX = panX + startLabelX * zoom
+  const startScreenY = Math.max(20, panY + (-10) * zoom)
+
   return (
     <div style={{ height: '100vh', background: colors.bg, display: 'flex', flexDirection: 'column', overflow: 'hidden', ...containerStyle }}>
       {header}
@@ -293,12 +297,14 @@ export function RoadmapView({ nodes, onNodeClick, completedIds, onToggleComplete
         </defs>
         <rect width="100%" height="100%" fill="url(#dot-grid)" />
 
-        <g transform={`translate(${panX}, ${panY}) scale(${zoom})`}>
-          <text x={startLabelX} y={-10} textAnchor="middle"
-            fill={colors.start} fontSize={8} fontWeight={600} fontFamily={font} letterSpacing={2.5}>
-            START
-          </text>
+        {/* START label — fixed in screen space above root node */}
+        <text x={startScreenX} y={startScreenY} textAnchor="middle"
+          fill={colors.start} fontSize={8} fontWeight={600} fontFamily={font} letterSpacing={2.5}
+          pointerEvents="none">
+          START
+        </text>
 
+        <g transform={`translate(${panX}, ${panY}) scale(${zoom})`}>
           <RoadmapEdges layoutNodes={layoutNodes} edges={edges} />
 
           {layoutNodes.map(node => (
