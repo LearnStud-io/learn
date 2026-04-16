@@ -286,18 +286,23 @@ The user pastes a sentence or paragraph from a lesson and says "visualise this" 
 
 3. **Split the text block** at that sentence — break the single `content` string into two parts: everything up to and including the sentence stays in the first block, everything after goes in a new `text` block.
 
-4. **Insert a `vis` block between them** with a `prompt` field storing the original sentence:
+4. **Insert a `text` block before the vis** that explains what the visualisation shows and how to use it. This is required for every vis — the learner should not have to guess what they are looking at or how to interact with it. Include:
+   - What the vis illustrates (one or two sentences)
+   - How to interact with it (what to click, toggle, or drag, and what to notice when they do)
+
+5. **Insert the `vis` block** after the explanation text, with a `prompt` field storing the original sentence:
    ```json
    { "type": "text", "content": "...everything up to the sentence." },
+   { "type": "text", "content": "The chart below shows... Use the buttons to... Notice how..." },
    { "type": "vis", "file": "vis/<name>.html", "caption": "...", "prompt": "The exact sentence the user pasted" },
    { "type": "text", "content": "Everything after the sentence..." }
    ```
 
-5. **Choose the technology** — ask: does 3D genuinely help the learner grasp this concept? If yes, use Three.js. If not, use p5.js for animation or vanilla JS for simple layouts.
+6. **Choose the technology** — ask: does 3D genuinely help the learner grasp this concept? If yes, use Three.js. If not, use p5.js for animation or vanilla JS for simple layouts.
 
-6. **Create the HTML file** at `src/modules/data/lessons/<node-id>/vis/<name>.html`. Read the relevant primitive files and inline them. Follow all vis rules. Include an in-vis interaction hint label.
+7. **Create the HTML file** at `src/modules/data/lessons/<node-id>/vis/<name>.html`. Read the relevant primitive files and inline them. Follow all vis rules. Include an in-vis interaction hint label.
 
-7. **Screenshot and verify** — run the screenshot tool and read the image before considering it done:
+8. **Screenshot and verify** — run the screenshot tool and read the image before considering it done:
    ```bash
    node scripts/screenshot-vis.mjs <node-id> <vis-filename> [height]
    ```
