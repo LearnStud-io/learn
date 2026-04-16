@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { RoadmapView } from '~/components/RoadmapView'
 import { Route as CourseRoute } from './course.$courseId'
@@ -15,6 +15,8 @@ export const Route = createFileRoute('/course/$courseId/')({
     const [sidebarOpen, setSidebarOpen] = useState(false)
 
     const hasOverview = data.course.overview || data.course.goal
+
+    useEffect(() => { document.title = data.course.title }, [data.course.title])
 
     return (
       <div style={{ display: 'flex', height: '100vh', overflow: 'hidden', background: colors.bg }}>

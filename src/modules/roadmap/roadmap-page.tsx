@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { RoadmapView } from '~/components/RoadmapView'
 import { loadRoadmap, metadata } from '../data'
@@ -11,6 +11,9 @@ export function RoadmapPage() {
   const { nodes } = loadRoadmap()
   const { completed, toggle } = useCompletedNodes('local')
   const [sidebarOpen, setSidebarOpen] = useState(false)
+
+  useEffect(() => { document.title = metadata.title }, [])
+
 
   const hasOverview = metadata.overview || metadata.goal
 

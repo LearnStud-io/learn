@@ -66,7 +66,7 @@ One folder per roadmap node that has lesson content. The folder name must exactl
 }
 ```
 
-`goal` and `overview` are optional but recommended — they appear in the sidebar alongside the roadmap.
+`title` appears in the browser tab. `goal` and `overview` are optional but recommended — they appear in the sidebar alongside the roadmap. On lesson pages the tab title becomes `{node label} — {title}`.
 
 ---
 

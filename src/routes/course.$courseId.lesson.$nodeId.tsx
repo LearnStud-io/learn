@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { createFileRoute, useNavigate, notFound } from '@tanstack/react-router'
 import { LessonView } from '~/components/LessonView'
 import type { LessonNode } from '~/modules/data'
@@ -24,6 +25,11 @@ export const Route = createFileRoute('/course/$courseId/lesson/$nodeId')({
     const navigate = useNavigate()
 
     const { completed, toggle } = useCompletedNodes(courseId)
+
+    useEffect(() => {
+      const node = courseData.nodes.find(n => n.id === nodeId)
+      if (node) document.title = `${node.label} — ${courseData.course.title}`
+    }, [nodeId, courseData])
 
     const roadmapNode = courseData.nodes.find(n => n.id === nodeId)
     if (!roadmapNode) return (

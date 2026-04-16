@@ -1,6 +1,7 @@
+import { useEffect } from 'react'
 import { useParams, useNavigate } from '@tanstack/react-router'
 import { LessonView } from '~/components/LessonView'
-import { loadRoadmap, loadLesson, loadVis } from '../data'
+import { loadRoadmap, loadLesson, loadVis, metadata } from '../data'
 import { useCompletedNodes } from '../useCompletedNodes'
 
 export function LessonPage() {
@@ -11,6 +12,10 @@ export function LessonPage() {
   const { nodes: roadmapNodes } = loadRoadmap()
   const roadmapNode = roadmapNodes.find(n => n.id === nodeId)
   const lessonNodes = loadLesson(nodeId)
+
+  useEffect(() => {
+    document.title = roadmapNode ? `${roadmapNode.label} — ${metadata.title}` : metadata.title
+  }, [roadmapNode])
 
   if (!roadmapNode) {
     return (
