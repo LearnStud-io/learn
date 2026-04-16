@@ -168,7 +168,7 @@ Content for one roadmap node. A tree of sections, each with content blocks.
 - `blocks` — ordered list of content blocks; can be empty `[]`
 - `children` — nested subsections; can be empty `[]`; nesting can go as deep as needed
 - Block type `text` — plain text content, use `\n` for line breaks; supports LaTeX math via KaTeX (see **Math in text blocks** below)
-- Block type `vis` — references an HTML file in the `vis/` folder; `caption` is optional; `height` is optional (integer px, defaults to 280) — set it when the vis needs more or less vertical space
+- Block type `vis` — references an HTML file in the `vis/` folder; `caption` is optional; `height` is optional (integer px, defaults to 280) — **always set this based on the content**. A simple bar chart may only need 200px; a dense grid or multi-panel vis may need 400px or more. Do not default to 280 unless 280 genuinely fits the content.
 
 ---
 
@@ -232,7 +232,7 @@ Self-contained HTML files rendered in a sandboxed iframe. Used for interactive d
 - Use the dark background `#080d14` to match the platform theme
 - Use accent colour `#3b82f6` (blue) for highlights
 - Use text colour `#e2e8f0` for primary text, `#64748b` for muted text
-- The iframe is `width: 100%` and defaults to `height: 280px` — design for whatever height you set in the `vis` block's `height` field (omit for 280px default)
+- The iframe is `width: 100%` — height is set by the `vis` block's `height` field. Design the vis for the height you choose, not for a fixed default. Heights vary: a simple toggle vis might be 200px, a step-through diagram 360px, a dense grid 420px. Pick what fits the content and verify with a screenshot.
 - Always include a brief interaction hint inside the vis (e.g. a small fixed label: "← toggle", "drag to rotate", "hover a node") so the learner knows what to do
 
 **Technology choice — evaluate before writing code:**
