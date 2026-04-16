@@ -158,27 +158,6 @@ function RoadmapNodeCard({
         </text>
       </g>
 
-      {/* Completion badge — top-right corner */}
-      <g
-        transform={`translate(${NODE_W - 13}, 13)`}
-        style={{ cursor: 'pointer' }}
-        onClick={e => { e.stopPropagation(); onToggleComplete(node.id) }}
-      >
-        <circle
-          r={8}
-          fill={completed ? GREEN : 'transparent'}
-          stroke={completed ? GREEN : hovered ? '#475569' : '#2d3748'}
-          strokeWidth={1.5}
-        />
-        {completed && (
-          <path
-            d="M-3.5,0 L-1,2.5 L3.5,-2.5"
-            stroke="white" strokeWidth={1.5}
-            strokeLinecap="round" strokeLinejoin="round"
-            fill="none"
-          />
-        )}
-      </g>
     </g>
   )
 }
