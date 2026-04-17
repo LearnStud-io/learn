@@ -73,14 +73,14 @@ function RoadmapEdges({ layoutNodes, edges }: { layoutNodes: LayoutNode[]; edges
         const f = posMap[edge.from]
         const t = posMap[edge.to]
         if (!f || !t) return null
-        const dx = t.x - f.x, dy = t.y - f.y
-        const len = Math.sqrt(dx * dx + dy * dy)
-        const ux = dx / len, uy = dy / len
+        const startY = f.y + f.h / 2
+        const endY = t.y - t.h / 2 - 6
+        const midY = (startY + endY) / 2
         return (
-          <line
+          <path
             key={`${edge.from}-${edge.to}`}
-            x1={f.x + ux * (f.h / 2)} y1={f.y + uy * (f.h / 2)}
-            x2={t.x - ux * (t.h / 2 + 6)} y2={t.y - uy * (t.h / 2 + 6)}
+            d={`M${f.x},${startY} L${f.x},${midY} L${t.x},${midY} L${t.x},${endY}`}
+            fill="none"
             stroke={colors.edge} strokeWidth={1.5} markerEnd="url(#arrow)"
           />
         )
