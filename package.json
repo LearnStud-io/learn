@@ -8,7 +8,8 @@
     "screenshot-vis": "node scripts/screenshot-vis.mjs",
     "build": "vite build && tsc --noEmit",
     "start": "serve -s dist -l ${PORT:-3002}",
-    "publish": "node scripts/publish.mjs"
+    "publish": "node scripts/publish.mjs",
+    "sync": "node scripts/sync.mjs"
   },
   "dependencies": {
     "@radix-ui/react-label": "^2.1.8",
