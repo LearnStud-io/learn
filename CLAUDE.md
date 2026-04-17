@@ -353,6 +353,7 @@ vis-primitives/
 - Interactive when possible — the user should explore, not just observe
 - Always show a brief in-vis instruction (what to click, drag, or hover) — never leave the learner guessing how to interact
 - Always give the first element (buttons/title) at least 10–12px from the top edge, and the last element (hint text) at least 10px from the bottom edge — never let UI elements sit flush against the canvas border
+- **Vertical text spacing**: keep at least 16px between separate text lines at the bottom of the vis (description, hint, labels). When a vis has a caption/label near the bottom, a description line, *and* a hint footer, budget at least 50px total for the bottom text zone and verify in a screenshot that nothing overlaps or feels cramped. Increase the vis height rather than squeezing text together.
 - Prefer 3D (Three.js) only when depth or rotation reveals something 2D cannot — otherwise p5.js or vanilla JS is simpler and loads faster
 
 ### Text contrast on the dark background (`#080d14`)
