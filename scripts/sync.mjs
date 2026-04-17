@@ -9,7 +9,7 @@ import { join } from 'path'
 import { tmpdir } from 'os'
 
 const REPO = 'git@github.com:LearnStud-io/learn.git'
-const SKIP_TOP = new Set(['src', '.env', 'CLAUDE.md', 'node_modules', '.git'])
+const SKIP_TOP = new Set(['src', '.env', 'node_modules', '.git'])
 
 const root = process.cwd()
 const tmp = mkdtempSync(join(tmpdir(), 'learn-sync-'))
