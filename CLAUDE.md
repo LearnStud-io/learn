@@ -1,26 +1,3 @@
-# Course Context
-
-**Course:** Mechanistic Interpretability — A Builder's Guide
-**Approach:** Top-down, builder-first — each stage produces a working tool before diving into theory
-**Learner profile:** Fullstack developer with CS degree; knows basic linear algebra and calculus; learns by doing; goal is to build tools for exploring AI internals
-
-### The 5-stage roadmap
-
-| Stage | Label | What you build |
-|-------|-------|---------------|
-| 1 | The Explorer | Token/logit viewer — first window into a model |
-| 2 | The Anatomy | Logit lens — watch predictions form layer by layer |
-| 3 | The Surgeon | Activation patching tool — trace which head does what |
-| 4 | The Archaeologist | Sparse autoencoder + feature explorer |
-| 5 | The Cartographer | Circuit graph visualizer — map full component composition |
-
-### Data fields
-
-`metadata.json` supports `title`, `subtitle`, `version`, `overview`, and `goal`.
-`overview` and `goal` are displayed in the left sidebar of the roadmap page.
-
----
-
 # LearnStudio Course Authoring
 
 You are helping create a course for LearnStudio — a platform that renders structured learning roadmaps with interactive lessons.
@@ -187,12 +164,12 @@ $$
 
 The renderer detects the `$` delimiter automatically — no block type change needed. If your text contains a literal dollar sign (e.g. a price), escape it: `\$5.99`.
 
-Common patterns for this course:
-- Partial derivative: `$\frac{\partial L}{\partial W_{ij}}$`
-- Matrix multiply: `$W \in \mathbb{R}^{512 \times 50000}$`
-- Norm: `$\|a\|$`
-- Dot product: `$a \cdot b$`
-- Update rule: `$W \leftarrow W - \alpha \nabla L$`
+Common patterns:
+- Fraction: `$\frac{a}{b}$`
+- Superscript / subscript: `$x_i^2$`
+- Greek letters: `$\alpha, \beta, \gamma$`
+- Sum: `$\sum_{i=1}^{n} x_i$`
+- Set membership: `$x \in \mathbb{R}$`
 
 ---
 
