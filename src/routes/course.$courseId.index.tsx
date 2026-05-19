@@ -4,7 +4,17 @@ import { RoadmapView } from '~/components/RoadmapView'
 import { Route as CourseRoute } from './course.$courseId'
 import { colors, font } from '~/modules/theme'
 import { useCompletedNodes } from '~/modules/useCompletedNodes'
-import { Info, X } from 'lucide-react'
+import { Info, X, Lock, Loader2 } from 'lucide-react'
+
+const CREATE_URL = import.meta.env.VITE_CREATE_URL ?? import.meta.env.VITE_API_URL ?? 'https://create.learnstud.io'
+
+function formatPrice(priceCents: number, currency: string): string {
+  try {
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(priceCents / 100)
+  } catch {
+    return `${(priceCents / 100).toFixed(2)} ${currency}`
+  }
+}
 
 export const Route = createFileRoute('/course/$courseId/')({
   component: function CourseRoadmap() {
@@ -13,13 +23,57 @@ export const Route = createFileRoute('/course/$courseId/')({
     const navigate = useNavigate()
     const { completed, toggle } = useCompletedNodes(courseId)
     const [sidebarOpen, setSidebarOpen] = useState(false)
+    const [buying, setBuying] = useState(false)
+    const [buyError, setBuyError] = useState<string | null>(null)
 
     const hasOverview = data.course.overview || data.course.goal
+    const showBuyBanner = data.course.isPaid && !data.course.unlocked
 
     useEffect(() => { document.title = data.course.title }, [data.course.title])
 
+    async function handleBuy() {
+      setBuyError(null)
+      setBuying(true)
+      try {
+        const res = await fetch(`${CREATE_URL}/api/courses/${courseId}/checkout`, { method: 'POST' })
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({})) as { error?: string }
+          throw new Error(body.error ?? `Checkout failed (${res.status})`)
+        }
+        const { url } = await res.json() as { url: string }
+        window.location.href = url
+      } catch (err) {
+        setBuyError(err instanceof Error ? err.message : 'Checkout failed')
+        setBuying(false)
+      }
+    }
+
     return (
-      <div style={{ display: 'flex', height: '100vh', overflow: 'hidden', background: colors.bg }}>
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden', background: colors.bg }}>
+        {showBuyBanner && data.course.priceCents != null && (
+          <div className="flex items-center justify-between gap-3 px-4 py-2 shrink-0 border-b border-amber-500/30 bg-amber-500/10">
+            <div className="flex items-center gap-2 min-w-0">
+              <Lock className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+              <p className="text-xs text-amber-100/90 truncate">
+                Lessons are locked. Purchase this course to unlock all of them.
+              </p>
+            </div>
+            <div className="flex items-center gap-3 shrink-0">
+              {buyError && <span className="text-xs text-destructive hidden sm:inline">{buyError}</span>}
+              <button
+                onClick={handleBuy}
+                disabled={buying}
+                className="text-xs font-medium px-3 py-1.5 rounded-md bg-amber-500 hover:bg-amber-400 text-amber-950 transition-colors disabled:opacity-60 inline-flex items-center gap-1.5"
+              >
+                {buying
+                  ? <><Loader2 className="w-3 h-3 animate-spin" />Redirecting…</>
+                  : <>Buy {formatPrice(data.course.priceCents, data.course.currency)}</>
+                }
+              </button>
+            </div>
+          </div>
+        )}
+        <div style={{ display: 'flex', flex: 1, minHeight: 0, overflow: 'hidden' }}>
         {/* ── Left sidebar: goal + overview (desktop) ───────────────────── */}
         {hasOverview && (
           <div className="hidden md:flex" style={{
@@ -95,7 +149,7 @@ export const Route = createFileRoute('/course/$courseId/')({
           completedIds={completed}
           onToggleComplete={toggle}
           storageKey={`roadmap-transform:${courseId}`}
-          containerStyle={{ flex: 1, height: '100vh' }}
+          containerStyle={{ flex: 1, height: '100%' }}
           {...(!hasOverview && {
             header: (
               <div className="flex items-center px-6 py-3 shrink-0 border-b border-border bg-card/50">
@@ -112,6 +166,7 @@ export const Route = createFileRoute('/course/$courseId/')({
             ),
           })}
         />
+        </div>
 
         {/* ── Mobile info toggle ──────────────────────────────────────────── */}
         {hasOverview && (
